@@ -1,0 +1,47 @@
+{
+    "name": "jiny/post",
+    "description": "Jiny Post Package - Board, Blog, Post, QNA functionality for Laravel applications",
+    "type": "library",
+    "keywords": ["laravel", "board", "blog", "post", "qna", "cms", "jiny"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jiny Team",
+            "email": "contact@jiny.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3",
+        "laravel/framework": "^10.0|^11.0|^12.0",
+        "jiny/admin": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "orchestra/testbench": "^8.0|^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jiny\\Post\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jiny\\Post\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jiny\\Post\\Providers\\JinyPostServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "version": "1.0.0"
+}
