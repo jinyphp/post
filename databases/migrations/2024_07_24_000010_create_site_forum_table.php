@@ -10,39 +10,50 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_posts', function (Blueprint $table) {
+        Schema::create('site_forum', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-
-            $table->string('enable')->nullable();
 
             // 분류코드
             $table->string('code')->nullable();
             $table->string('slug')->nullable();
 
             // 작성자 정보
+            $table->unsignedBigInteger('user_id')->nullable(); // 회원 ID
+            $table->string('user_uuid')->nullable(); // 회원 UUID (샤딩 지원)
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('password')->nullable(); // 비회원일 경우 비밀번호 필요
 
-            // post 정보
+            // 포럼 정보
             $table->string('categories')->nullable();
             $table->string('keyword')->nullable();
             $table->string('tags')->nullable();
-
-            $table->string('trading')->nullable();
 
             // 제목내용
             $table->string('title')->nullable();
             $table->text('content')->nullable();
 
-            // post 대표 이미지
+            // 포럼 대표 이미지
             $table->string('image')->nullable();
 
+            // 샤딩 지원
+            $table->string('uuid')->nullable(); // 포럼 글 UUID
+            $table->unsignedTinyInteger('shard_id')->nullable(); // 샤드 ID
 
+            // 통계
             $table->unsignedBigInteger('click')->default(0); // 조회수
-            $table->unsignedBigInteger('like')->default(0); //좋아요
-            $table->unsignedBigInteger('rank')->default(0); //랭크
+            $table->unsignedBigInteger('like')->default(0); // 좋아요
+            $table->unsignedBigInteger('rank')->default(0); // 랭크
+
+            // 인덱스
+            $table->index(['categories', 'created_at']);
+            $table->index(['uuid', 'shard_id']);
+            $table->index(['user_id']);
+            $table->index(['user_uuid', 'shard_id']);
+            $table->index(['code', 'created_at']);
+            $table->index(['click', 'created_at']); // 인기글 정렬용
+            $table->index(['like', 'created_at']); // 좋아요 정렬용
         });
     }
 
@@ -51,6 +62,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_posts');
+        Schema::dropIfExists('site_forum');
     }
 };

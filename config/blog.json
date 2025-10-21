@@ -1,0 +1,42 @@
+{
+    "policies": {
+        "admin_write": {
+            "enabled": true,
+            "description": "Admin blog write permission"
+        },
+        "user_write": {
+            "enabled": true,
+            "description": "User blog write permission"
+        },
+        "guest_write": {
+            "enabled": false,
+            "description": "Guest blog write permission"
+        },
+        "user_approval": {
+            "enabled": true,
+            "description": "User post approval required"
+        },
+        "auto_approve_admin": {
+            "enabled": true,
+            "description": "Auto approve admin posts"
+        },
+        "featured_admin_only": {
+            "enabled": false,
+            "description": "Featured posts admin only"
+        },
+        "category_restriction": {
+            "enabled": true,
+            "description": "Category restriction"
+        }
+    },
+    "settings": {
+        "default_status": "draft",
+        "max_images_per_post": 5,
+        "auto_excerpt_length": 250,
+        "enable_comments": true,
+        "comment_approval": false,
+        "seo_enabled": true
+    },
+    "updated_at": "2025-10-21T12:28:16.961110Z",
+    "updated_by": "이호진"
+}

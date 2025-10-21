@@ -23,8 +23,8 @@
             <a href="{{ route('admin.cms.board.list.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i> 게시판 생성
             </a>
-            <a href="{{ route('admin.cms.board.table.create') }}" class="btn btn-success">
-                <i class="bi bi-pencil-square me-1"></i> 새 글 작성
+            <a href="{{ route('admin.cms.forum.create') }}" class="btn btn-success">
+                <i class="bi bi-pencil-square me-1"></i> 포럼 글 작성
             </a>
             <ol class="breadcrumb m-0 ms-3">
                 <li class="breadcrumb-item">
@@ -78,7 +78,7 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <a href="{{ route('admin.cms.board.table') }}" class="btn btn-sm btn-light">
+                        <a href="{{ route('admin.cms.forum') }}" class="btn btn-sm btn-light">
                             관리 <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -136,7 +136,7 @@
                             <i class="bi bi-clock-history text-primary me-2"></i>
                             최근 게시글
                         </h5>
-                        <a href="{{ route('admin.cms.board.table') }}" class="btn btn-sm btn-outline-primary">
+                        <a href="{{ route('admin.cms.forum') }}" class="btn btn-sm btn-outline-primary">
                             전체보기
                         </a>
                     </div>
@@ -185,7 +185,7 @@
                             <i class="bi bi-fire text-danger me-2"></i>
                             인기 게시글
                         </h5>
-                        <a href="{{ route('admin.cms.board.table') }}" class="btn btn-sm btn-outline-danger">
+                        <a href="{{ route('admin.cms.forum') }}" class="btn btn-sm btn-outline-danger">
                             전체보기
                         </a>
                     </div>
@@ -243,23 +243,23 @@
                         </a>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     @if(isset($board_stats) && $board_stats->count() > 0)
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle">
+                            <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>게시판명</th>
+                                        <th class="ps-4">게시판명</th>
                                         <th>Slug</th>
                                         <th width="150" class="text-center">게시글 수</th>
                                         <th width="100" class="text-center">상태</th>
-                                        <th width="200" class="text-center">작업</th>
+                                        <th width="200" class="text-center pe-4">작업</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($board_stats as $board)
                                         <tr>
-                                            <td>
+                                            <td class="ps-4">
                                                 <div>
                                                     <a href="{{ route('admin.cms.board.posts', $board->code) }}" class="text-decoration-none">
                                                         <strong>{{ $board->title }}</strong>
@@ -282,7 +282,7 @@
                                                     <span class="badge bg-secondary">비활성</span>
                                                 @endif
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center pe-4">
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <a href="{{ route('admin.cms.board.list.edit', $board->id) }}"
                                                        class="btn btn-outline-primary" title="수정">
@@ -316,38 +316,89 @@
     <!-- 추가 통계 카드 -->
     <div class="row g-3 mt-3">
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm bg-light">
-                <div class="card-body text-center">
-                    <i class="bi bi-link-45deg fs-1 text-primary mb-2"></i>
-                    <h4 class="mb-0">{{ $stats['total_related'] ?? 0 }}</h4>
-                    <p class="text-muted mb-2">관련글</p>
-                    <a href="{{ route('admin.cms.board.related') }}" class="btn btn-sm btn-outline-primary">
-                        관리하기
-                    </a>
+            <div class="card border-0 shadow-sm h-100 overflow-hidden position-relative">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-shape icon-sm bg-light-primary text-primary rounded-2 me-3">
+                                <i class="bi bi-link-45deg fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-muted">관련글</h6>
+                        </div>
+                        <h3 class="mb-0 fw-bold">{{ $stats['total_related'] ?? 0 }}</h3>
+                        <small class="text-success">
+                            <i class="bi bi-arrow-up"></i> 활성 상태
+                        </small>
+                    </div>
+                    <div class="ms-3">
+                        <a href="{{ route('admin.cms.board.related') }}" class="btn btn-sm btn-primary">
+                            관리하기
+                        </a>
+                    </div>
+                </div>
+                <div class="position-absolute top-0 end-0 p-3">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-2">
+                        <i class="bi bi-link-45deg text-primary fs-6"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm bg-light">
-                <div class="card-body text-center">
-                    <i class="bi bi-graph-up-arrow fs-1 text-success mb-2"></i>
-                    <h4 class="mb-0">{{ $stats['total_trend'] ?? 0 }}</h4>
-                    <p class="text-muted mb-2">트렌드글</p>
-                    <a href="{{ route('admin.cms.board.trend') }}" class="btn btn-sm btn-outline-success">
-                        관리하기
-                    </a>
+            <div class="card border-0 shadow-sm h-100 overflow-hidden position-relative">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-shape icon-sm bg-light-success text-success rounded-2 me-3">
+                                <i class="bi bi-graph-up-arrow fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-muted">트렌드글</h6>
+                        </div>
+                        <h3 class="mb-0 fw-bold">{{ $stats['total_trend'] ?? 0 }}</h3>
+                        <small class="text-success">
+                            <i class="bi bi-arrow-up"></i> 활성 상태
+                        </small>
+                    </div>
+                    <div class="ms-3">
+                        <a href="{{ route('admin.cms.board.trend') }}" class="btn btn-sm btn-success">
+                            관리하기
+                        </a>
+                    </div>
+                </div>
+                <div class="position-absolute top-0 end-0 p-3">
+                    <div class="bg-success bg-opacity-10 rounded-circle p-2">
+                        <i class="bi bi-graph-up-arrow text-success fs-6"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm bg-light">
-                <div class="card-body text-center">
-                    <i class="bi bi-collection fs-1 text-info mb-2"></i>
-                    <h4 class="mb-0">{{ ($stats['total_boards'] ?? 0) + ($stats['total_posts'] ?? 0) }}</h4>
-                    <p class="text-muted mb-2">전체 항목</p>
-                    <span class="badge bg-info">Total Items</span>
+            <div class="card border-0 shadow-sm h-100 overflow-hidden position-relative">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-shape icon-sm bg-light-info text-info rounded-2 me-3">
+                                <i class="bi bi-collection fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-muted">전체 항목</h6>
+                        </div>
+                        <h3 class="mb-0 fw-bold">{{ ($stats['total_boards'] ?? 0) + ($stats['total_posts'] ?? 0) }}</h3>
+                        <small class="text-info">
+                            <i class="bi bi-check-circle"></i> Total Items
+                        </small>
+                    </div>
+                    <div class="ms-3">
+                        <span class="badge bg-info fs-6 px-3 py-2">
+                            <i class="bi bi-collection me-1"></i>
+                            전체
+                        </span>
+                    </div>
+                </div>
+                <div class="position-absolute top-0 end-0 p-3">
+                    <div class="bg-info bg-opacity-10 rounded-circle p-2">
+                        <i class="bi bi-collection text-info fs-6"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -363,6 +414,12 @@
     width: 3rem;
     height: 3rem;
 }
+
+.icon-shape.icon-sm {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
 .bg-light-primary {
     background-color: rgba(13, 110, 253, 0.1);
 }
@@ -374,6 +431,36 @@
 }
 .bg-light-info {
     background-color: rgba(13, 202, 240, 0.1);
+}
+
+/* 추가 통계 카드 호버 효과 */
+.card:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 테이블 컨테이너 개선 */
+.table-responsive {
+    border-radius: 0;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* 배지 개선 */
+.badge {
+    font-weight: 500;
+}
+
+/* 카드 내부 아이콘 배경 */
+.position-absolute .rounded-circle {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
 @endpush

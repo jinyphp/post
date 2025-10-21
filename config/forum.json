@@ -1,0 +1,48 @@
+{
+    "policies": {
+        "admin_write": {
+            "enabled": true,
+            "description": "Admin forum write permission"
+        },
+        "user_write": {
+            "enabled": true,
+            "description": "User forum write permission"
+        },
+        "guest_write": {
+            "enabled": false,
+            "description": "Guest forum write permission"
+        },
+        "user_approval": {
+            "enabled": false,
+            "description": "User post approval required"
+        },
+        "auto_approve_admin": {
+            "enabled": true,
+            "description": "Auto approve admin posts"
+        },
+        "category_restriction": {
+            "enabled": false,
+            "description": "Category restriction"
+        },
+        "allow_anonymous": {
+            "enabled": false,
+            "description": "Allow anonymous posting"
+        }
+    },
+    "settings": {
+        "default_status": "published",
+        "max_images_per_post": 10,
+        "auto_excerpt_length": 150,
+        "enable_comments": true,
+        "comment_approval": false,
+        "enable_voting": true,
+        "enable_tags": true,
+        "max_tags_per_post": 5,
+        "pagination_limit": 15,
+        "enable_search": true,
+        "enable_file_upload": true,
+        "max_file_size_mb": 5
+    },
+    "updated_at": "2025-10-21T12:28:24.900270Z",
+    "updated_by": "이호진"
+}

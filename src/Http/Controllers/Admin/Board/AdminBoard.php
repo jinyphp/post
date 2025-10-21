@@ -37,9 +37,31 @@ class AdminBoard extends Controller
      */
     public function index(Request $request)
     {
-        $rows = DB::table($this->table)
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = DB::table($this->table);
+
+        // 검색 기능
+        if ($search = $request->get('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('code', 'LIKE', "%{$search}%")
+                  ->orWhere('slug', 'LIKE', "%{$search}%")
+                  ->orWhere('subtitle', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // 상태 필터
+        if ($status = $request->get('status')) {
+            if ($status === 'active') {
+                $query->where('enable', 1);
+            } elseif ($status === 'inactive') {
+                $query->where('enable', 0);
+            }
+        }
+
+        $rows = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // 검색 파라미터를 페이지네이션에 전달
+        $rows->appends($request->query());
 
         // 각 게시판의 게시글 수와 총 조회수 계산
         foreach ($rows as $row) {
@@ -109,6 +131,11 @@ class AdminBoard extends Controller
             $code = substr($code, 0, 7);
             $data['code'] = $code;
 
+            // slug가 비어있으면 code 값을 사용
+            if (empty($data['slug'])) {
+                $data['slug'] = $code;
+            }
+
             // 게시판 테이블과 코멘트 테이블, 평가 테이블을 생성합니다.
             $this->schemaCreate("site_board_" . $code);
             $this->createCommentTable("site_board_" . $code . "_comments");
@@ -148,6 +175,14 @@ class AdminBoard extends Controller
 
         // 체크박스 처리
         $data['enable'] = $request->has('enable') ? 1 : 0;
+
+        // 현재 게시판 정보 가져오기
+        $currentBoard = DB::table($this->table)->find($id);
+
+        // slug가 비어있으면 code 값을 사용
+        if (empty($data['slug']) && $currentBoard && $currentBoard->code) {
+            $data['slug'] = $currentBoard->code;
+        }
 
         // 코드는 변경이 불가능합니다.
         unset($data['code']);

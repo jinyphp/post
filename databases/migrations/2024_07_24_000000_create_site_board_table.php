@@ -57,6 +57,23 @@ return new class extends Migration
             ## 글갯수
             $table->unsignedBigInteger('post')->default(0);
 
+            ## 페이지당 게시물 수
+            $table->integer('per_page')->default(10);
+
+            ## 추가 설정
+            $table->integer('sort_order')->default(0); // 정렬 순서
+            $table->string('category')->nullable(); // 카테고리
+            $table->boolean('use_comment')->default(true); // 댓글 사용
+            $table->boolean('use_rating')->default(false); // 평가 사용
+            $table->boolean('use_like')->default(true); // 좋아요 사용
+            $table->integer('max_file_size')->default(5120); // 최대 파일 크기(KB)
+            $table->string('allowed_extensions')->default('jpg,jpeg,png,gif,pdf,doc,docx'); // 허용 확장자
+            $table->json('extra_fields')->nullable(); // 추가 필드 설정
+
+            ## 통계 정보
+            $table->integer('total_views')->default(0); // 총 조회수
+            $table->timestamp('last_post_at')->nullable(); // 마지막 게시글 작성 시간
+
         });
     }
 
