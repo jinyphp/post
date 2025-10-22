@@ -1,6 +1,6 @@
 <?php
 
-namespace Jiny\Post\Http\Controllers\Site\Board;
+namespace Jiny\Post\Http\Controllers\Site\BoardTable;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;

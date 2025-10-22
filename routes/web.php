@@ -9,48 +9,48 @@ use Illuminate\Support\Facades\Route;
  * 사용자가 접근할 수 있는 게시판 기능을 제공합니다.
  */
 Route::middleware('web')->prefix('board')->name('board.')->group(function () {
-    // 게시판 목록
-    Route::get('/{code}', \Jiny\Post\Http\Controllers\Site\Board\IndexController::class)
-        ->name('index');
-
-    // 게시판 대시보드
-    Route::get('/dashboard', \Jiny\Post\Http\Controllers\Site\Board\DashboardController::class)
+    // 게시판 대시보드 (루트 경로)
+    Route::get('/', \Jiny\Post\Http\Controllers\Site\Board\DashboardController::class)
         ->name('dashboard');
 
+    // 게시판 목록
+    Route::get('/{code}', \Jiny\Post\Http\Controllers\Site\BoardTable\IndexController::class)
+        ->name('index');
+
     // 게시글 작성
-    Route::get('/{code}/create', \Jiny\Post\Http\Controllers\Site\Board\CreateController::class)
+    Route::get('/{code}/create', \Jiny\Post\Http\Controllers\Site\BoardTable\CreateController::class)
         ->name('create');
-    Route::post('/{code}/create', \Jiny\Post\Http\Controllers\Site\Board\StoreController::class)
+    Route::post('/{code}/create', \Jiny\Post\Http\Controllers\Site\BoardTable\StoreController::class)
         ->name('store');
 
     // 게시글 보기
-    Route::get('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\Board\ShowController::class)
+    Route::get('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardTable\ShowController::class)
         ->name('show');
 
     // 게시글 수정
-    Route::get('/{code}/{id}/edit', \Jiny\Post\Http\Controllers\Site\Board\EditController::class)
+    Route::get('/{code}/{id}/edit', \Jiny\Post\Http\Controllers\Site\BoardTable\EditController::class)
         ->name('edit');
-    Route::put('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\Board\UpdateController::class)
+    Route::put('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardTable\UpdateController::class)
         ->name('update');
 
     // 게시글 삭제
-    Route::delete('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\Board\DestroyController::class)
+    Route::delete('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardTable\DestroyController::class)
         ->name('destroy');
 
     // 답글 작성
-    Route::get('/{code}/{id}/reply', \Jiny\Post\Http\Controllers\Site\Board\CreateChildController::class)
+    Route::get('/{code}/{id}/reply', \Jiny\Post\Http\Controllers\Site\BoardTable\CreateChildController::class)
         ->name('reply');
 
     // 댓글 관리
-    Route::post('/{code}/{id}/comment', \Jiny\Post\Http\Controllers\Site\Board\StoreCommentController::class)
+    Route::post('/{code}/{id}/comment', \Jiny\Post\Http\Controllers\Site\BoardTable\StoreCommentController::class)
         ->name('comment.store');
-    Route::put('/{code}/{id}/comment/{commentId}', \Jiny\Post\Http\Controllers\Site\Board\UpdateCommentController::class)
+    Route::put('/{code}/{id}/comment/{commentId}', \Jiny\Post\Http\Controllers\Site\BoardTable\UpdateCommentController::class)
         ->name('comment.update');
-    Route::delete('/{code}/{id}/comment/{commentId}', \Jiny\Post\Http\Controllers\Site\Board\DestroyCommentController::class)
+    Route::delete('/{code}/{id}/comment/{commentId}', \Jiny\Post\Http\Controllers\Site\BoardTable\DestroyCommentController::class)
         ->name('comment.destroy');
 
     // 평가 관리
-    Route::post('/{code}/{id}/rating', \Jiny\Post\Http\Controllers\Site\Board\StoreRatingController::class)
+    Route::post('/{code}/{id}/rating', \Jiny\Post\Http\Controllers\Site\BoardTable\StoreRatingController::class)
         ->name('rating.store');
 });
 

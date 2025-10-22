@@ -250,7 +250,7 @@
                                             <label class="col-sm-2 col-form-label">발행일시</label>
                                             <div class="col-sm-10">
                                                 <input type="datetime-local" class="form-control" name="published_at"
-                                                    value="{{ old('published_at', $blog->published_at ? $blog->published_at->format('Y-m-d\TH:i') : '') }}">
+                                                    value="{{ old('published_at', $blog->published_at ? \Carbon\Carbon::parse($blog->published_at)->format('Y-m-d\TH:i') : '') }}">
                                                 <div class="form-text">발행 상태일 때 표시되는 시간입니다.</div>
                                             </div>
                                         </div>
@@ -259,7 +259,7 @@
                                             <label class="col-sm-2 col-form-label">예약 발행일시</label>
                                             <div class="col-sm-10">
                                                 <input type="datetime-local" class="form-control" name="scheduled_at"
-                                                    value="{{ old('scheduled_at', $blog->scheduled_at ? $blog->scheduled_at->format('Y-m-d\TH:i') : '') }}">
+                                                    value="{{ old('scheduled_at', $blog->scheduled_at ? \Carbon\Carbon::parse($blog->scheduled_at)->format('Y-m-d\TH:i') : '') }}">
                                                 <div class="form-text">예약 발행 상태일 때 자동 발행될 시간입니다.</div>
                                             </div>
                                         </div>

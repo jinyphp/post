@@ -133,6 +133,45 @@
                 </div>
             </div>
 
+            <!-- Multi Images Gallery -->
+            @if(!empty($blogImages) && count($blogImages) > 0)
+                <div class="row justify-content-center mt-4">
+                    <div class="blog-images-gallery">
+                        <h5 class="mb-3 text-center">
+                            <i class="bi bi-images me-2 text-primary"></i>첨부 이미지 ({{ count($blogImages) }}개)
+                        </h5>
+                        <div class="row g-4">
+                            @foreach($blogImages as $image)
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="overflow-hidden" style="height: 250px;">
+                                            <img src="{{ $image->url }}"
+                                                 alt="{{ $image->original_name }}"
+                                                 class="card-img-top w-100 h-100"
+                                                 style="object-fit: cover; cursor: pointer;"
+                                                 onclick="openImageModal('{{ $image->url }}', '{{ $image->original_name }}')">
+                                        </div>
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title text-truncate mb-2" title="{{ $image->original_name }}">
+                                                {{ $image->original_name }}
+                                            </h6>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-file-earmark me-1"></i>{{ number_format($image->size / 1024, 1) }} KB
+                                                </small>
+                                                <small class="text-primary">
+                                                    <i class="bi bi-eye me-1"></i>확대보기
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Content -->
             <div class="row justify-content-center">
                 <div>
@@ -414,6 +453,28 @@
         .form-control:focus {
             border-color: #0d6efd;
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Image Gallery Styles */
+        .blog-images-gallery .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .blog-images-gallery .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+
+        .blog-images-gallery .card img {
+            transition: transform 0.3s ease;
+        }
+
+        .blog-images-gallery .card:hover img {
+            transform: scale(1.05);
+        }
+
+        .blog-images-gallery .card-body {
+            background-color: rgba(248, 249, 250, 0.8);
         }
 
         .btn-primary {
@@ -790,5 +851,42 @@
                 }
             });
         @endif
+
+        // Image Modal Functions
+        function openImageModal(imageUrl, imageName) {
+            // Check if modal exists, if not create it
+            let modal = document.getElementById('imageModal');
+            if (!modal) {
+                createImageModal();
+                modal = document.getElementById('imageModal');
+            }
+
+            // Set modal content
+            document.getElementById('modalImage').src = imageUrl;
+            document.getElementById('modalImageTitle').textContent = imageName;
+
+            // Show modal
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        }
+
+        function createImageModal() {
+            const modalHTML = `
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalImageTitle">이미지</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center p-0">
+                                <img id="modalImage" class="img-fluid w-100" alt="확대 이미지">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
     </script>
 @endpush

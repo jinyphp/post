@@ -1,13 +1,13 @@
 <?php
 
-namespace Jiny\Post\Http\Controllers\Site\Board;
+namespace Jiny\Post\Http\Controllers\Site\BoardTable;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
-use Jiny\Post\Http\Controllers\Site\Board\BoardPermissions;
+use Jiny\Post\Http\Controllers\Site\BoardTable\BoardPermissions;
 
 /**
  * 게시글 평가(좋아요/별점) 저장 컨트롤러
