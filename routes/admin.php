@@ -154,8 +154,10 @@ Route::middleware(['admin'])->prefix('admin/cms/blog')->name('admin.cms.blog')->
         ->name('.config.update');
 
     // 블로그 글 생성
-    Route::match(['GET', 'POST'], '/create', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogCreate::class)
+    Route::get('/create', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogCreate::class)
         ->name('.create');
+    Route::post('/', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogStore::class)
+        ->name('.store');
 
     // 일괄 작업 (/{id} 라우트보다 먼저 정의)
     // Route::post('/bulk/status', [\Jiny\Post\Http\Controllers\Admin\Blog\AdminBlog::class, 'bulkStatus'])
@@ -180,8 +182,10 @@ Route::middleware(['admin'])->prefix('admin/cms/blog')->name('admin.cms.blog')->
     // 블로그 글 개별 조작 라우트 (가장 마지막에 정의 - {id} 매개변수가 다른 경로와 충돌하지 않도록)
     Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogShow::class)
         ->name('.show')->where('id', '[0-9]+');
-    Route::match(['GET', 'POST', 'PUT'], '/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogEdit::class)
+    Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogEdit::class)
         ->name('.edit')->where('id', '[0-9]+');
+    Route::match(['POST', 'PUT'], '/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogUpdate::class)
+        ->name('.update')->where('id', '[0-9]+');
     Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogDelete::class)
         ->name('.destroy')->where('id', '[0-9]+');
 

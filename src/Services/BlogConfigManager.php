@@ -58,7 +58,7 @@ class BlogConfigManager
     /**
      * 설정 파일 저장
      */
-    public function save(array $config = null)
+    public function save(?array $config = null)
     {
         if ($config !== null) {
             $this->config = $config;

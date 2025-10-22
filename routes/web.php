@@ -55,27 +55,52 @@ Route::middleware('web')->prefix('board')->name('board.')->group(function () {
 });
 
 /**
- * Blog 라우트
+ * Blog 라우트 - Single Action Controller (SAC) 방식
  *
  * @description
- * 블로그 기능을 제공합니다.
+ * 블로그 기능을 제공합니다. (SAC 패턴 적용)
  */
 Route::middleware('web')->prefix('blog')->name('blog.')->group(function () {
     // 블로그 목록 페이지
-    Route::get('/', [\Jiny\Post\Http\Controllers\Site\Blog\BlogController::class, 'index'])
+    Route::get('/', \Jiny\Post\Http\Controllers\Site\Blog\BlogIndex::class)
         ->name('index');
 
+    // 블로그 글 작성 폼
+    Route::get('/create', \Jiny\Post\Http\Controllers\Site\Blog\BlogCreate::class)
+        ->name('create');
+
+    // 블로그 글 저장
+    Route::post('/', \Jiny\Post\Http\Controllers\Site\Blog\BlogStore::class)
+        ->name('store');
+
     // 카테고리별 블로그 목록
-    Route::get('/category/{slug}', [\Jiny\Post\Http\Controllers\Site\Blog\BlogController::class, 'category'])
+    Route::get('/category/{slug}', \Jiny\Post\Http\Controllers\Site\Blog\BlogCategory::class)
         ->name('category');
 
     // 블로그 상세 페이지
-    Route::get('/{slug}', [\Jiny\Post\Http\Controllers\Site\Blog\BlogController::class, 'show'])
-        ->name('show');
+    Route::get('/{slug}', \Jiny\Post\Http\Controllers\Site\Blog\BlogShow::class)
+        ->name('show')
+        ->where('slug', '[a-zA-Z0-9\-_]+');
+
+    // 블로그 글 수정 폼
+    Route::get('/{slug}/edit', \Jiny\Post\Http\Controllers\Site\Blog\BlogEdit::class)
+        ->name('edit')
+        ->where('slug', '[a-zA-Z0-9\-_]+');
+
+    // 블로그 글 수정 처리
+    Route::put('/{slug}', \Jiny\Post\Http\Controllers\Site\Blog\BlogUpdate::class)
+        ->name('update')
+        ->where('slug', '[a-zA-Z0-9\-_]+');
+
+    // 블로그 글 삭제
+    Route::delete('/{slug}', \Jiny\Post\Http\Controllers\Site\Blog\BlogDelete::class)
+        ->name('destroy')
+        ->where('slug', '[a-zA-Z0-9\-_]+');
 
     // 좋아요 기능 (AJAX)
-    Route::post('/{slug}/like', [\Jiny\Post\Http\Controllers\Site\Blog\BlogController::class, 'like'])
-        ->name('like');
+    Route::post('/{slug}/like', \Jiny\Post\Http\Controllers\Site\Blog\BlogLike::class)
+        ->name('like')
+        ->where('slug', '[a-zA-Z0-9\-_]+');
 
     // 댓글 등록 (AJAX)
     Route::post('/comment', \Jiny\Post\Http\Controllers\BlogCommentStore::class)

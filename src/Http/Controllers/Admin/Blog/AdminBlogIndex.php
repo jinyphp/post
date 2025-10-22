@@ -34,7 +34,8 @@ class AdminBlogIndex extends Controller
                     $this->table . '.*',
                     'site_blog_cate.name as category_name',
                     'site_blog_cate.color as category_color',
-                    DB::raw('(SELECT COUNT(*) FROM site_blog_comments WHERE site_blog_comments.blog_id = ' . $this->table . '.id) as comments_count')
+                    DB::raw('CAST((SELECT COUNT(*) FROM site_blog_comments WHERE site_blog_comments.blog_id = ' . $this->table . '.id) AS INTEGER) as comments_count'),
+                    DB::raw('CAST((SELECT COUNT(*) FROM site_blog_images WHERE site_blog_images.blog_id = ' . $this->table . '.id) AS INTEGER) as images_count')
                 ])
                 ->leftJoin('site_blog_cate', $this->table . '.category_slug', '=', 'site_blog_cate.slug')
                 ->orderBy($this->table . '.created_at', 'desc');

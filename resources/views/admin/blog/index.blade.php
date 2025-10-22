@@ -159,6 +159,7 @@
                             <th width="100" class="text-center">상태</th>
                             <th width="100" class="text-center">조회수</th>
                             <th width="100" class="text-center">댓글</th>
+                            <th width="100" class="text-center">이미지</th>
                             <th width="160">작성일</th>
                             <th width="140" class="text-center pe-4">작업</th>
                         </tr>
@@ -237,6 +238,15 @@
                                            title="댓글 관리">
                                             <i class="bi bi-chat-dots me-1"></i>{{ number_format($blog->comments_count) }}
                                         </a>
+                                    @else
+                                        <span class="badge bg-light text-muted">0</span>
+                                    @endif
+                                </td>
+                                <td width="100" class="text-center">
+                                    @if(isset($blog->images_count) && (int)$blog->images_count > 0)
+                                        <span class="badge bg-info" title="첨부 이미지 {{ $blog->images_count }}개">
+                                            <i class="bi bi-images me-1"></i>{{ number_format($blog->images_count) }}
+                                        </span>
                                     @else
                                         <span class="badge bg-light text-muted">0</span>
                                     @endif
