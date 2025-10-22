@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
+use Jiny\Post\Services\ForumPermissionManager;
 
 /**
  * 포럼 글 상세보기 단일 액션 컨트롤러
@@ -14,6 +15,12 @@ use Illuminate\Support\Facades\Auth;
 class ForumShow extends Controller
 {
     protected $viewPath = 'jiny-post::www.forum';
+    protected $permissionManager;
+
+    public function __construct(ForumPermissionManager $permissionManager)
+    {
+        $this->permissionManager = $permissionManager;
+    }
 
     public function __invoke(Request $request, $id)
     {
@@ -73,8 +80,30 @@ class ForumShow extends Controller
             $categories = array_map('trim', explode(',', $post->categories));
         }
 
-        // 사용자의 좋아요 상태 확인
-        $userLiked = $this->checkUserLiked($id, $request->ip());
+        // 포럼 설정 정보
+        $config = $this->permissionManager->getConfigManager();
+        $enableVoting = $config->getSetting('enable_voting', false);
+
+        // 사용자의 좋아요 상태 확인 (투표 기능이 활성화된 경우만)
+        $userLiked = false;
+        if ($enableVoting) {
+            $userLiked = $this->checkUserLiked($id, $request->ip());
+        }
+
+        // 포럼 이미지들 조회
+        $forumImages = DB::table('site_forum_images')
+            ->where('forum_id', $id)
+            ->orderBy('sort_order')
+            ->get();
+
+        // 현재 사용자 정보 가져오기
+        $currentUser = $this->permissionManager->getCurrentUser();
+
+        // 포럼 설정 정보
+        $forumSettings = [
+            'enable_voting' => $enableVoting,
+            'enable_tags' => $config->getSetting('enable_tags', true),
+        ];
 
         return view("{$this->viewPath}.show", [
             'post' => $post,
@@ -84,6 +113,9 @@ class ForumShow extends Controller
             'tags' => $tags,
             'categories' => $categories,
             'userLiked' => $userLiked,
+            'currentUser' => $currentUser,
+            'forumSettings' => $forumSettings,
+            'forumImages' => $forumImages,
         ]);
     }
 

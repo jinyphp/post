@@ -31,21 +31,9 @@ class AdminForumCreate extends Controller
     ];
 
     /**
-     * 포럼 글 생성 처리 (GET: 폼 표시, POST: 저장 처리)
+     * 포럼 글 생성 폼 표시
      */
     public function __invoke(Request $request)
-    {
-        if ($request->isMethod('GET')) {
-            return $this->showCreateForm($request);
-        }
-
-        return $this->store($request);
-    }
-
-    /**
-     * 생성 폼 표시
-     */
-    protected function showCreateForm(Request $request)
     {
         // 활성화된 카테고리 목록 가져오기
         $categories = DB::table('site_forum_cate')
@@ -54,25 +42,21 @@ class AdminForumCreate extends Controller
                         ->orderBy('name', 'asc')
                         ->get();
 
+        // 포럼 설정 정보 (기본값으로 제공)
+        $forumSettings = [
+            'enable_tags' => true,
+            'enable_file_upload' => true,
+            'max_images_per_post' => 10,
+            'max_file_size_mb' => 5,
+            'max_tags_per_post' => 5,
+            'auto_excerpt_length' => 150,
+        ];
+
         return view("{$this->viewPath}.create", [
             'config' => $this->config,
             'actions' => $this->config,
             'categories' => $categories,
+            'forumSettings' => $forumSettings,
         ]);
-    }
-
-    /**
-     * 데이터 저장
-     */
-    protected function store(Request $request)
-    {
-        $data = $request->except(['_token', '_method']);
-        $data['created_at'] = now();
-        $data['updated_at'] = now();
-
-        DB::table($this->table)->insert($data);
-
-        return redirect()->route('admin.cms.forum')
-            ->with('success', '포럼 글이 생성되었습니다.');
     }
 }

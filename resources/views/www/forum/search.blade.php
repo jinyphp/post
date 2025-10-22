@@ -1,4 +1,5 @@
-<!-- 검색 및 필터 폼 -->
+<!-- 검색 및 필터 폼 (검색 기능이 활성화된 경우만) -->
+@if($forumSettings['enable_search'])
 <div class="card mb-3">
     <div class="card-body">
         <form method="GET" action="{{ url()->current() }}" class="row g-3" id="searchForm">
@@ -30,7 +31,9 @@
                 <select name="sort" class="form-select">
                     <option value="created_at" {{ $currentSort == 'created_at' ? 'selected' : '' }}>최신순</option>
                     <option value="click" {{ $currentSort == 'click' ? 'selected' : '' }}>조회순</option>
-                    <option value="like" {{ $currentSort == 'like' ? 'selected' : '' }}>좋아요순</option>
+                    @if($forumSettings['enable_voting'])
+                        <option value="like" {{ $currentSort == 'like' ? 'selected' : '' }}>좋아요순</option>
+                    @endif
                     <option value="title" {{ $currentSort == 'title' ? 'selected' : '' }}>제목순</option>
                 </select>
             </div>
@@ -62,3 +65,4 @@
         document.getElementById('searchForm').submit();
     });
 </script>
+@endif

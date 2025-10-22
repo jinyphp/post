@@ -35,23 +35,41 @@ class AdminForumIndex extends Controller
      */
     public function __invoke(Request $request)
     {
-        $query = DB::table($this->table);
+        $query = DB::table($this->table)
+            ->leftJoin('site_forum_images', 'site_forum.id', '=', 'site_forum_images.forum_id')
+            ->select(
+                'site_forum.*',
+                DB::raw('COUNT(site_forum_images.id) as image_count')
+            )
+            ->groupBy(
+                'site_forum.id',
+                'site_forum.title',
+                'site_forum.content',
+                'site_forum.name',
+                'site_forum.email',
+                'site_forum.categories',
+                'site_forum.click',
+                'site_forum.like',
+                'site_forum.rank',
+                'site_forum.created_at',
+                'site_forum.updated_at'
+            );
 
         // 검색 기능
         if ($search = $request->get('search')) {
             $query->where(function($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('content', 'LIKE', "%{$search}%")
-                  ->orWhere('name', 'LIKE', "%{$search}%");
+                $q->where('site_forum.title', 'LIKE', "%{$search}%")
+                  ->orWhere('site_forum.content', 'LIKE', "%{$search}%")
+                  ->orWhere('site_forum.name', 'LIKE', "%{$search}%");
             });
         }
 
         // 카테고리 필터
         if ($category = $request->get('category')) {
-            $query->where('categories', $category);
+            $query->where('site_forum.categories', $category);
         }
 
-        $rows = $query->orderBy('created_at', 'desc')->paginate(15);
+        $rows = $query->orderBy('site_forum.created_at', 'desc')->paginate(15);
 
         // 검색 파라미터를 페이지네이션에 전달
         $rows->appends($request->query());

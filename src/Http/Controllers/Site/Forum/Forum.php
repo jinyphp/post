@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Jiny\Site\Facades\Header;
 use Jiny\Site\Facades\Footer;
+use Jiny\Post\Services\ForumPermissionManager;
 
 /**
  * 포럼 목록 단일 액션 컨트롤러
@@ -16,6 +17,12 @@ use Jiny\Site\Facades\Footer;
 class Forum extends Controller
 {
     protected $viewPath = 'jiny-post::www.forum';
+    protected $permissionManager;
+
+    public function __construct(ForumPermissionManager $permissionManager)
+    {
+        $this->permissionManager = $permissionManager;
+    }
 
     public function __invoke(Request $request)
     {
@@ -25,15 +32,17 @@ class Forum extends Controller
             abort(404, '포럼 테이블이 존재하지 않습니다.');
         }
 
-        // 페이지당 게시물 수 (기본값: 10)
-        $perPage = $request->get('perPage', 10);
-        $perPage = in_array($perPage, [5, 10, 20, 50, 100]) ? $perPage : 10;
+        // 페이지당 게시물 수 (설정에서 가져오기)
+        $defaultPerPage = $this->permissionManager->getConfigManager()->getSetting('pagination_limit', 15);
+        $perPage = $request->get('perPage', $defaultPerPage);
+        $perPage = in_array($perPage, [5, 10, 15, 20, 50, 100]) ? $perPage : $defaultPerPage;
 
         // 기본 쿼리
         $query = DB::table($table);
 
-        // 검색 기능
-        if ($request->has('search') && $request->search) {
+        // 검색 기능 (설정에서 활성화된 경우만)
+        $enableSearch = $this->permissionManager->getConfigManager()->getSetting('enable_search', true);
+        if ($enableSearch && $request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -42,7 +51,8 @@ class Forum extends Controller
             });
         }
 
-        // 카테고리 필터
+        // 카테고리 필터 (카테고리 제한이 활성화된 경우)
+        $categoryRestriction = $this->permissionManager->getConfigManager()->getPolicy('category_restriction', false);
         if ($request->has('category') && $request->category) {
             $query->where('categories', 'like', "%{$request->category}%");
         }
@@ -51,8 +61,13 @@ class Forum extends Controller
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
 
-        // 허용된 정렬 필드만 사용
-        $allowedSorts = ['created_at', 'title', 'click', 'like', 'rank'];
+        // 허용된 정렬 필드만 사용 (투표 기능 설정에 따라)
+        $enableVoting = $this->permissionManager->getConfigManager()->getSetting('enable_voting', false);
+        $allowedSorts = ['created_at', 'title', 'click', 'rank'];
+        if ($enableVoting) {
+            $allowedSorts[] = 'like';
+        }
+
         if (!in_array($sortBy, $allowedSorts)) {
             $sortBy = 'created_at';
         }
@@ -86,6 +101,22 @@ class Forum extends Controller
         $header = Header::getDefaultHeaderPath();
         $footer = Footer::getDefaultFooterPath();
 
+        // 사용자 권한 정보 가져오기
+        $currentUser = $this->permissionManager->getCurrentUser();
+        $writePermission = $this->permissionManager->canWrite($currentUser);
+
+        // 포럼 설정 정보
+        $forumSettings = [
+            'enable_search' => $enableSearch,
+            'enable_voting' => $enableVoting,
+            'enable_tags' => $this->permissionManager->getConfigManager()->getSetting('enable_tags', true),
+            'enable_file_upload' => $this->permissionManager->getConfigManager()->getSetting('enable_file_upload', true),
+            'category_restriction' => $categoryRestriction,
+            'pagination_limit' => $defaultPerPage,
+            'max_images_per_post' => $this->permissionManager->getConfigManager()->getSetting('max_images_per_post', 10),
+            'auto_excerpt_length' => $this->permissionManager->getConfigManager()->getSetting('auto_excerpt_length', 150),
+        ];
+
         return view("{$this->viewPath}.index", [
             'rows' => $rows,
             'categories' => $categories,
@@ -96,6 +127,9 @@ class Forum extends Controller
             'currentSearch' => $request->search,
             'header' => $header,
             'footer' => $footer,
+            'currentUser' => $currentUser,
+            'writePermission' => $writePermission,
+            'forumSettings' => $forumSettings,
         ]);
     }
 }

@@ -9,7 +9,7 @@
             "description": "User forum write permission"
         },
         "guest_write": {
-            "enabled": false,
+            "enabled": true,
             "description": "Guest forum write permission"
         },
         "user_approval": {
@@ -35,7 +35,7 @@
         "auto_excerpt_length": 150,
         "enable_comments": true,
         "comment_approval": false,
-        "enable_voting": true,
+        "enable_voting": false,
         "enable_tags": true,
         "max_tags_per_post": 5,
         "pagination_limit": 15,
@@ -43,6 +43,6 @@
         "enable_file_upload": true,
         "max_file_size_mb": 5
     },
-    "updated_at": "2025-10-21T12:28:24.900270Z",
+    "updated_at": "2025-10-22T06:48:12.894317Z",
     "updated_by": "이호진"
 }

@@ -107,9 +107,32 @@ Route::middleware('web')->group(function () {
     Route::get('/forum', \Jiny\Post\Http\Controllers\Site\Forum\Forum::class)
         ->name('forum.index');
 
+    // 포럼 글 작성 폼
+    Route::get('/forum/create', \Jiny\Post\Http\Controllers\Site\Forum\ForumCreate::class)
+        ->name('forum.create');
+
+    // 포럼 글 저장
+    Route::post('/forum', \Jiny\Post\Http\Controllers\Site\Forum\ForumStore::class)
+        ->name('forum.store');
+
     // 포럼 상세 페이지
     Route::get('/forum/{id}', \Jiny\Post\Http\Controllers\Site\Forum\ForumShow::class)
         ->name('forum.show')
+        ->where('id', '[0-9]+');
+
+    // 포럼 글 수정 폼
+    Route::get('/forum/{id}/edit', \Jiny\Post\Http\Controllers\Site\Forum\ForumEdit::class)
+        ->name('forum.edit')
+        ->where('id', '[0-9]+');
+
+    // 포럼 글 수정 처리
+    Route::put('/forum/{id}', \Jiny\Post\Http\Controllers\Site\Forum\ForumUpdate::class)
+        ->name('forum.update')
+        ->where('id', '[0-9]+');
+
+    // 포럼 글 삭제
+    Route::delete('/forum/{id}', \Jiny\Post\Http\Controllers\Site\Forum\ForumDelete::class)
+        ->name('forum.destroy')
         ->where('id', '[0-9]+');
 
     // 포럼 좋아요 AJAX

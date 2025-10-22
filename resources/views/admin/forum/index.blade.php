@@ -80,6 +80,7 @@
                         <tr>
                             <th class="ps-4">제목</th>
                             <th width='150'>작성자</th>
+                            <th width='80' class="text-center">이미지</th>
                             <th width='100' class="text-center">조회수</th>
                             <th width='100' class="text-center">좋아요</th>
                             <th width='150'>등록일자</th>
@@ -120,6 +121,15 @@
                                         <div class="text-muted small">{{$item->email}}</div>
                                     @endif
                                 </td>
+                                <td width='80' class="text-center">
+                                    @if(($item->image_count ?? 0) > 0)
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-images me-1"></i>{{ $item->image_count }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
                                 <td width='100' class="text-center">
                                     <span class="badge bg-secondary">{{number_format($item->click ?? 0)}}</span>
                                 </td>
@@ -150,7 +160,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
+                                <td colspan="7" class="text-center py-5 text-muted">
                                     <i class="bi bi-chat-square fs-1 d-block mb-2"></i>
                                     <p class="mb-0">등록된 포럼 글이 없습니다.</p>
                                 </td>

@@ -43,16 +43,31 @@
                             <span class="me-3">
                                 <i class="bi bi-eye"></i> {{ number_format($post->click ?? 0) }}
                             </span>
-                            <span>
-                                <i class="bi bi-heart-fill text-danger"></i> {{ number_format($post->like ?? 0) }}
-                            </span>
+                            @if($forumSettings['enable_voting'])
+                                <span>
+                                    <i class="bi bi-heart-fill text-danger"></i> {{ number_format($post->like ?? 0) }}
+                                </span>
+                            @endif
                         </div>
-                        <div>
-                            <button class="btn {{ $userLiked ? 'btn-danger' : 'btn-outline-danger' }} btn-sm"
-                                onclick="toggleLike({{ $post->id }})">
-                                <i class="bi {{ $userLiked ? 'bi-heart-fill' : 'bi-heart' }}" id="likeIcon"></i>
-                                <span id="likeCount">{{ $post->like ?? 0 }}</span>
-                            </button>
+                        <div class="d-flex gap-2">
+                            <!-- 수정/삭제 버튼 (권한이 있는 경우만) -->
+                            @if(isset($currentUser) && $currentUser && ($currentUser->id == ($post->user_id ?? null) || (isset($currentUser->isAdmin) && $currentUser->isAdmin)))
+                                <a href="{{ route('forum.edit', $post->id) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil"></i> 수정
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" onclick="confirmDelete({{ $post->id }})">
+                                    <i class="bi bi-trash"></i> 삭제
+                                </button>
+                            @endif
+
+                            <!-- 좋아요 버튼 (투표 기능이 활성화된 경우만) -->
+                            @if($forumSettings['enable_voting'])
+                                <button class="btn {{ $userLiked ? 'btn-danger' : 'btn-outline-danger' }} btn-sm"
+                                    onclick="toggleLike({{ $post->id }})">
+                                    <i class="bi {{ $userLiked ? 'bi-heart-fill' : 'bi-heart' }}" id="likeIcon"></i>
+                                    <span id="likeCount">{{ $post->like ?? 0 }}</span>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </section>
@@ -74,11 +89,35 @@
 
                 <!-- 포럼 글 내용 -->
                 <section>
-                    <!-- 대표 이미지 -->
+                    <!-- 대표 이미지 (기존) -->
                     @if ($post->image)
                         <div class="mb-3 text-center">
                             <img src="{{ $post->image }}" alt="포럼 이미지" class="img-fluid rounded"
                                 style="max-height: 400px;">
+                        </div>
+                    @endif
+
+                    <!-- 다중 이미지 갤러리 -->
+                    @if(!empty($forumImages) && count($forumImages) > 0)
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-3">첨부 이미지</h6>
+                            <div class="row g-3">
+                                @foreach($forumImages as $image)
+                                    <div class="col-md-4 col-sm-6">
+                                        <div class="card">
+                                            <img src="{{ $image->url }}"
+                                                 class="card-img-top"
+                                                 style="height: 200px; object-fit: cover; cursor: pointer;"
+                                                 alt="{{ $image->original_name }}"
+                                                 onclick="openImageModal('{{ $image->url }}', '{{ $image->original_name }}')">
+                                            <div class="card-body p-2">
+                                                <small class="text-muted d-block">{{ $image->original_name }}</small>
+                                                <small class="text-muted">{{ number_format($image->size / 1024, 1) }} KB</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
 
@@ -87,8 +126,8 @@
                         {!! nl2br(e($post->content)) !!}
                     </div>
 
-                    <!-- 태그 표시 -->
-                    @if (!empty($tags))
+                    <!-- 태그 표시 (태그 기능이 활성화된 경우만) -->
+                    @if ($forumSettings['enable_tags'] && !empty($tags))
                         <div class="mt-4 pt-3 border-top">
                             <h6 class="text-muted mb-2">태그</h6>
                             @foreach ($tags as $tag)
@@ -143,7 +182,68 @@
 
     </div>
 
+    <!-- 이미지 모달 -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">이미지 보기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="" class="img-fluid">
+                </div>
+                <div class="modal-footer">
+                    <a id="downloadLink" href="" download="" class="btn btn-primary">
+                        <i class="bi bi-download"></i> 다운로드
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // 이미지 모달 열기
+        function openImageModal(imageSrc, imageName) {
+            const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            const modalImage = document.getElementById('modalImage');
+            const downloadLink = document.getElementById('downloadLink');
+            const modalTitle = document.getElementById('imageModalLabel');
+
+            modalImage.src = imageSrc;
+            downloadLink.href = imageSrc;
+            downloadLink.download = imageName;
+            modalTitle.textContent = imageName;
+
+            modal.show();
+        }
+
+        // 삭제 확인
+        function confirmDelete(postId) {
+            if (confirm('정말로 이 글을 삭제하시겠습니까?\n삭제된 글은 복구할 수 없습니다.')) {
+                // 삭제 폼 생성 및 제출
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/forum/${postId}`;
+
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+
+                form.appendChild(csrfToken);
+                form.appendChild(methodInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
         function toggleLike(postId) {
             const likeIcon = document.getElementById('likeIcon');
             const likeCount = document.getElementById('likeCount');

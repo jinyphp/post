@@ -3,5 +3,7 @@
 ])
 
 <div class="{{ $col }}">
-    {{ $slot }}
+    <div class="sticky-top" style="top: 2rem;">
+        {{ $slot }}
+    </div>
 </div>

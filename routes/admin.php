@@ -98,11 +98,7 @@ Route::middleware(['admin'])->prefix('admin/cms/forum')->name('admin.cms.forum')
     Route::match(['POST', 'PUT'], '/config', \Jiny\Post\Http\Controllers\Admin\ForumConfig\AdminForumConfigUpdate::class)
         ->name('.config.update');
 
-    // 포럼 글 목록 - Single Action Controllers (단일 포럼 관리)
-    Route::get('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumIndex::class)
-        ->name('');
-    Route::match(['GET', 'POST'], '/create', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumCreate::class)
-        ->name('.create');
+
 
     // 포럼 카테고리 관리 - Single Action Controllers (/{id} 라우트보다 먼저 정의)
     Route::get('/category', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryIndex::class)
@@ -120,9 +116,19 @@ Route::middleware(['admin'])->prefix('admin/cms/forum')->name('admin.cms.forum')
     Route::post('/category/order', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryOrder::class)
         ->name('.category.order');
 
-    // 포럼 글 개별 조작 라우트 - Single Action Controllers (가장 마지막에 정의 - {id} 매개변수가 다른 경로와 충돌하지 않도록)
-    Route::match(['GET', 'POST', 'PUT'], '/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumEdit::class)
+    // 포럼 글 목록 - Single Action Controllers (단일 포럼 관리)
+    Route::get('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumIndex::class)
+        ->name('');
+    Route::get('/create', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumCreate::class)
+        ->name('.create');
+    Route::post('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumStore::class)
+        ->name('.store');
+    Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumShow::class)
+        ->name('.show')->where('id', '[0-9]+');
+    Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumEdit::class)
         ->name('.edit')->where('id', '[0-9]+');
+    Route::put('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumUpdate::class)
+        ->name('.update')->where('id', '[0-9]+');
     Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumDelete::class)
         ->name('.destroy')->where('id', '[0-9]+');
 });

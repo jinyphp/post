@@ -6,11 +6,9 @@
     <div class="container-fluid">
 
         <x-heading title="포럼 글 수정" :subtitle="$item->title . ' 글을 수정합니다.'">
-            <div class="d-flex gap-2">
-                <x-btn-back-to-list :route="route('admin.cms.forum')">
-                    목록
-                </x-btn-back-to-list>
-            </div>
+            <x-btn-back-to-list :route="route('admin.cms.forum')">
+                목록
+            </x-btn-back-to-list>
         </x-heading>
 
         <!-- 알림 메시지 -->
@@ -22,385 +20,598 @@
             {{ session('error') }}
         </x-alert-danger>
 
-        <form action="{{ route('admin.cms.forum.edit', $item->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+        <x-content>
+            <x-content-main>
+                <form id="forumEditForm" action="{{ route('admin.cms.forum.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
 
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom">
-                    <h5 class="mb-0">
-                        <i class="bi bi-chat-square-text me-2 text-primary"></i>
-                        포럼 글 수정
-                    </h5>
-                </div>
+                    <div class="card border-0 shadow-sm">
+                        <ul class="nav nav-tabs nav-tabs-custom" id="forumTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="basic-tab" data-bs-toggle="tab"
+                                        data-bs-target="#basic" type="button" role="tab">
+                                        기본정보
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="author-tab" data-bs-toggle="tab" data-bs-target="#author"
+                                        type="button" role="tab">
+                                        작성자
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage"
+                                        type="button" role="tab">
+                                        관리
+                                    </button>
+                                </li>
+                            </ul>
 
-                <div class="card-body p-0">
-                    <ul class="nav nav-tabs nav-tabs-custom" id="forumTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic"
-                                type="button" role="tab">
-                                기본정보
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="author-tab" data-bs-toggle="tab" data-bs-target="#author"
-                                type="button" role="tab">
-                                작성자
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage"
-                                type="button" role="tab">
-                                관리
-                            </button>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content" id="forumTabContent">
-                        <!-- 기본정보 탭 -->
-                        <div class="tab-pane fade show active" id="basic" role="tabpanel">
-                            <div class="p-4">
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">제목 <span class="text-danger">*</span></label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="title" required
-                                            value="{{ old('title', $item->title) }}" placeholder="포럼 글 제목">
-                                        @error('title')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
+                        <div class="card-body">
+                            <div class="tab-content" id="forumTabContent">
+                                <!-- 기본정보 탭 -->
+                                <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">제목 <span class="text-danger">*</span></label>
+                                        <div class="col-sm-10">
+                                            <x-input-text name="title" :value="old('title', $item->title)" required placeholder="포럼 글 제목" />
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">카테고리</label>
-                                    <div class="col-sm-10">
-                                        <div class="d-flex gap-2">
-                                            <div class="flex-grow-1">
-                                                <select class="form-select" name="categories" id="categorySelect">
-                                                    <option value="">카테고리 선택</option>
-                                                    @foreach ($categories ?? [] as $category)
-                                                        <option value="{{ $category->slug }}"
-                                                            data-color="{{ $category->color }}"
-                                                            data-icon="{{ $category->icon }}"
-                                                            {{ old('categories', $item->categories) == $category->slug ? 'selected' : '' }}>
-                                                            {{ $category->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">카테고리</label>
+                                        <div class="col-sm-10">
+                                            <div class="d-flex gap-2">
+                                                <div class="flex-grow-1">
+                                                    <select class="form-select" name="categories" id="categorySelect">
+                                                        <option value="">카테고리 선택</option>
+                                                        @foreach ($categories ?? [] as $category)
+                                                            <option value="{{ $category->slug }}"
+                                                                data-color="{{ $category->color }}"
+                                                                data-icon="{{ $category->icon }}"
+                                                                {{ old('categories', $item->categories) == $category->slug ? 'selected' : '' }}>
+                                                                {{ $category->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <a href="{{ route('admin.cms.forum.category') }}"
+                                                        class="btn btn-outline-secondary" title="카테고리 관리">
+                                                        <i class="bi bi-gear"></i>
+                                                    </a>
+                                                </div>
                                             </div>
-                                            <div class="flex-shrink-0">
-                                                <a href="{{ route('admin.cms.forum.category') }}"
-                                                    class="btn btn-outline-secondary" title="카테고리 관리">
-                                                    <i class="bi bi-gear"></i>
-                                                </a>
+                                            <div class="form-text">
+                                                카테고리가 없으면
+                                                <a href="{{ route('admin.cms.forum.category.create') }}" target="_blank">여기서</a>
+                                                신규로 작성하세요.
                                             </div>
                                         </div>
-                                        <div class="form-text">
-                                            카테고리가 없으면
-                                            <a href="{{ route('admin.cms.forum.category.create') }}" target="_blank">여기서
-                                                생성</a>하세요.
-                                        </div>
-                                        <!-- 선택된 카테고리 미리보기 -->
-                                        <div id="categoryPreview" class="mt-2" style="display: none;">
-                                            <span class="badge" id="previewCategoryBadge">
-                                                <i id="previewCategoryIcon"></i>
-                                                <span id="previewCategoryName"></span>
-                                            </span>
+                                    </div>
+
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">키워드</label>
+                                        <div class="col-sm-10">
+                                            <x-input-text name="keyword" :value="old('keyword', $item->keyword ?? '')" placeholder="관련 키워드 (쉼표로 구분)" />
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">키워드</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="keyword"
-                                            value="{{ old('keyword', $item->keyword) }}" placeholder="관련 키워드 (쉼표로 구분)">
+                                    <!-- 다중 이미지 업로드 섹션 -->
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">이미지 첨부</label>
+                                        <div class="col-sm-10">
+
+                                            <!-- 기존 이미지들 표시 -->
+                                            @if(!empty($forumImages) && count($forumImages) > 0)
+                                                <div class="mb-4">
+                                                    <h6 class="text-muted mb-3">
+                                                        <i class="bi bi-images me-1"></i>등록된 이미지 (<span id="existingImageCount">{{ count($forumImages) }}</span>개)
+                                                    </h6>
+                                                    <div class="row g-3" id="existingImagesContainer">
+                                                        @foreach($forumImages as $image)
+                                                            <div class="col-md-3 col-sm-4 col-6" data-image-id="{{ $image->id }}">
+                                                                <div class="card">
+                                                                    <img src="{{ $image->url }}" class="card-img-top" style="height: 120px; object-fit: cover;">
+                                                                    <div class="card-body p-2">
+                                                                        <small class="text-muted d-block text-truncate" title="{{ $image->original_name }}">{{ $image->original_name }}</small>
+                                                                        <small class="text-muted">{{ number_format($image->size / 1024, 1) }} KB</small>
+                                                                        <button type="button" class="btn btn-sm btn-danger float-end" onclick="removeExistingImage({{ $image->id }}, this)">
+                                                                            <i class="bi bi-x"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    <!-- 삭제할 이미지 ID들을 저장하는 숨겨진 필드 -->
+                                                    <input type="hidden" name="remove_image_ids" id="removeImageIds" value="">
+                                                </div>
+                                            @endif
+
+                                            <!-- 드래그 앤 드롭 영역 -->
+                                            <div id="dropZoneAdmin" class="border border-dashed border-secondary rounded p-4 text-center mb-3"
+                                                 style="min-height: 150px; transition: all 0.3s ease;">
+                                                <div id="dropZoneContentAdmin">
+                                                    <i class="bi bi-cloud-upload fs-1 text-muted mb-2"></i>
+                                                    <p class="text-muted mb-2">
+                                                        <strong>드래그 앤 드롭</strong>으로 이미지를 업로드하거나<br>
+                                                        <strong>Ctrl+V</strong>로 클립보드 이미지를 붙여넣기하세요
+                                                    </p>
+                                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('imagesAdmin').click()">
+                                                        <i class="bi bi-folder2-open"></i> 파일 선택
+                                                    </button>
+                                                    <p class="small text-muted mt-2 mb-0">
+                                                        최대 {{ $forumSettings['max_images_per_post'] ?? 10 }}개 · JPG, PNG, GIF, WebP · 각 파일 최대 {{ $forumSettings['max_file_size_mb'] ?? 5 }}MB
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <!-- 숨겨진 파일 입력 -->
+                                            <input type="file"
+                                                   class="d-none"
+                                                   id="imagesAdmin"
+                                                   name="images[]"
+                                                   multiple
+                                                   accept="image/*">
+
+                                            <!-- 새 이미지 미리보기 및 관리 영역 -->
+                                            <div id="newImagePreviewAdmin" class="mt-3" style="display: none;">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h6 class="mb-0">새로 추가할 이미지 (<span id="newImageCountAdmin">0</span>/{{ $forumSettings['max_images_per_post'] ?? 10 }})</h6>
+                                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="document.getElementById('imagesAdmin').click()">
+                                                        <i class="bi bi-plus-circle"></i> 이미지 추가
+                                                    </button>
+                                                </div>
+                                                <div id="newImageListAdmin" class="row g-3">
+                                                    <!-- 새 이미지 미리보기들이 여기에 표시됩니다 -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">내용 <span class="text-danger">*</span></label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" name="content" rows="10" required placeholder="포럼 글 내용을 입력하세요">{{ old('content', $item->content) }}</textarea>
+                                            @error('content')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">태그</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="tags"
-                                            value="{{ old('tags', $item->tags) }}" placeholder="태그 (쉼표로 구분)">
+                                <!-- 작성자 탭 -->
+                                <div class="tab-pane fade" id="author" role="tabpanel">
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">작성자</label>
+                                        <div class="col-sm-10">
+                                            <x-input-text name="name" :value="old('name', $item->name)" placeholder="작성자명" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">이메일</label>
+                                        <div class="col-sm-10">
+                                            <x-input-text type="email" name="email" :value="old('email', $item->email)" placeholder="작성자 이메일" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">비밀번호</label>
+                                        <div class="col-sm-10">
+                                            <x-input-text type="password" name="password" placeholder="비회원 글 수정 시 비밀번호" />
+                                            <div class="form-text">
+                                                비회원 글의 경우 비밀번호를 입력하세요. 회원 글의 경우 입력하지 않아도 됩니다.
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">내용</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="content" rows="12">{{ old('content', $item->content) }}</textarea>
+                                <!-- 관리 탭 -->
+                                <div class="tab-pane fade" id="manage" role="tabpanel">
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">조회수</label>
+                                        <div class="col-sm-10">
+                                            <x-input-number name="click" :value="old('click', $item->click ?? 0)" />
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">대표 이미지</label>
-                                    <div class="col-sm-10">
-                                        <input type="url" class="form-control" name="image"
-                                            value="{{ old('image', $item->image) }}" placeholder="이미지 URL">
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">좋아요</label>
+                                        <div class="col-sm-10">
+                                            <x-input-number name="like" :value="old('like', $item->like ?? 0)" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">순위</label>
+                                        <div class="col-sm-10">
+                                            <x-input-number name="rank" :value="old('rank', $item->rank ?? 0)" />
+                                            <div class="form-text">
+                                                숫자가 높을수록 상위에 노출됩니다.
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 작성자 탭 -->
-                        <div class="tab-pane fade" id="author" role="tabpanel">
-                            <div class="p-4">
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">이름</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="name"
-                                            value="{{ old('name', $item->name) }}" placeholder="작성자 이름">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">이메일</label>
-                                    <div class="col-sm-10">
-                                        <input type="email" class="form-control" name="email"
-                                            value="{{ old('email', $item->email) }}" placeholder="작성자 이메일">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">비밀번호</label>
-                                    <div class="col-sm-10">
-                                        <input type="password" class="form-control" name="password"
-                                            placeholder="비회원일 경우 비밀번호">
-                                        <div class="form-text">변경하지 않으려면 비워두세요.</div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">코드</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="code"
-                                            value="{{ old('code', $item->code) }}" placeholder="분류 코드">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">슬러그</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="slug"
-                                            value="{{ old('slug', $item->slug) }}" placeholder="URL 슬러그">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 관리 탭 -->
-                        <div class="tab-pane fade" id="manage" role="tabpanel">
-                            <div class="p-4">
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">조회수</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" name="click"
-                                            value="{{ old('click', $item->click) }}" min="0">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">좋아요</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" name="like"
-                                            value="{{ old('like', $item->like) }}" min="0">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 row">
-                                    <label class="col-sm-2 col-form-label">랭크</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" name="rank"
-                                            value="{{ old('rank', $item->rank) }}" min="0">
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+                            <x-btn-reset>취소</x-btn-reset>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="bi bi-check-circle me-1"></i>
+                                수정
+                            </button>
+                            <button type="button" class="btn btn-primary d-none" id="loadingBtn" disabled>
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                수정 중...
+                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
+                </form>
 
-            <div class="d-flex justify-content-end gap-2 mt-3">
-                <x-btn-reset :route="route('admin.cms.forum')">
-                    취소
-                </x-btn-reset>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle me-1"></i> 수정
-                </button>
-            </div>
+            </x-content-main>
 
-        </form>
+            <x-content-side>
+                <x-help title="포럼 글 수정 가이드" icon="bi-book" icon-color="text-info">
+                    <x-help-title icon="bi-check-circle">필수 입력 사항</x-help-title>
+                    <p class="small text-muted mb-3">제목과 내용은 반드시 입력해야 합니다.</p>
 
-        {{-- 삭제 버튼은 폼 밖에서 별도로 (AJAX 처리) --}}
-        <div class="d-flex justify-content-start mt-3">
-            <button type="button" class="btn btn-danger" id="deleteBtn"
-                    data-item-id="{{ $item->id }}"
-                    data-item-title="{{ $item->title }}">
-                <i class="bi bi-trash me-1"></i> 삭제
-            </button>
-        </div>
+                    <x-help-title icon="bi-tags">카테고리 설정</x-help-title>
+                    <p class="small text-muted mb-3">적절한 카테고리를 선택하면 사용자들이 글을 쉽게 찾을 수 있습니다.</p>
+
+                    <x-help-title icon="bi-image">이미지 수정</x-help-title>
+                    <p class="small text-muted mb-3">기존 이미지를 유지하거나 새 이미지로 교체할 수 있습니다.</p>
+
+                    <x-help-title icon="bi-file-earmark-text">내용 수정 팁</x-help-title>
+                    <p class="small text-muted mb-0">명확하고 구체적인 내용으로 수정하여 더 나은 정보를 제공하세요.</p>
+                </x-help>
+
+                <x-help title="이미지 업로드" icon="bi-image" icon-color="text-success">
+                    <x-help-title icon="bi-upload">지원 형식</x-help-title>
+                    <p class="small text-muted mb-3">JPG, JPEG, PNG, GIF, WebP 형식을 지원합니다.</p>
+
+                    <x-help-title icon="bi-hdd">파일 크기</x-help-title>
+                    <p class="small text-muted mb-3">최대 10MB까지 업로드 가능합니다.</p>
+
+                    <x-help-title icon="bi-eye">미리보기</x-help-title>
+                    <p class="small text-muted mb-0">업로드 전에 이미지를 미리 확인할 수 있습니다.</p>
+                </x-help>
+
+                <x-help title="작성자 정보" icon="bi-person" icon-color="text-primary">
+                    <x-help-title icon="bi-person">기존 정보 유지</x-help-title>
+                    <p class="small text-muted mb-3">기존 작성자 정보가 자동으로 채워집니다.</p>
+
+                    <x-help-title icon="bi-lock">비밀번호 변경</x-help-title>
+                    <p class="small text-muted mb-0">비회원 글의 경우 비밀번호 변경이 가능합니다.</p>
+                </x-help>
+
+                <x-help title="관리 옵션" icon="bi-gear" icon-color="text-secondary">
+                    <x-help-title icon="bi-bar-chart">조회수/좋아요</x-help-title>
+                    <p class="small text-muted mb-3">기존 통계 값을 조정할 수 있습니다.</p>
+
+                    <x-help-title icon="bi-sort-numeric-down">순위 설정</x-help-title>
+                    <p class="small text-muted mb-0">글의 순위를 변경하여 노출 순서를 조정할 수 있습니다.</p>
+                </x-help>
+            </x-content-side>
+        </x-content>
+
 
     </div>
 
-    @push('styles')
-        <style>
-            /* 탭 스타일 */
-            .nav-tabs-custom {
-                background: transparent;
-                border-bottom: 1px solid #dee2e6;
-                padding: 0;
-            }
+    <style>
+        .nav-tabs-custom {
+            border-bottom: 1px solid #dee2e6;
+            margin: 0;
+        }
+        .nav-tabs-custom .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: none;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+        }
+        .nav-tabs-custom .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #495057;
+            border-bottom-color: #dee2e6;
+        }
+        .nav-tabs-custom .nav-link.active {
+            color: #0d6efd;
+            border-bottom-color: #0d6efd;
+            background: none;
+        }
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+    </style>
 
-            .nav-tabs-custom .nav-link {
-                border: none;
-                border-bottom: 3px solid transparent;
-                background: transparent;
-                color: #6c757d;
-                padding: 1rem 1.5rem;
-                font-weight: 500;
-            }
+    <script>
+        // 다중 이미지 업로드 관련 변수
+        let selectedFilesAdmin = [];
+        let removedImageIds = [];
+        const maxFilesAdmin = {{ $forumSettings['max_images_per_post'] ?? 10 }};
+        const maxFileSizeAdmin = {{ $forumSettings['max_file_size_mb'] ?? 5 }} * 1024 * 1024;
 
-            .nav-tabs-custom .nav-link:hover {
-                border-color: transparent;
-                background: rgba(0, 123, 255, 0.05);
-                color: #0d6efd;
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            const forumEditForm = document.getElementById('forumEditForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingBtn = document.getElementById('loadingBtn');
 
-            .nav-tabs-custom .nav-link.active {
-                background: transparent;
-                border-color: transparent transparent #0d6efd transparent;
-                color: #0d6efd;
-            }
+            // 다중 이미지 업로드 초기화
+            initAdminImageUpload();
 
-            /* 탭 컨텐츠 */
-            .tab-content {
-                background: white;
-            }
+            // 폼 제출 처리
+            if (forumEditForm) {
+                forumEditForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
 
-            /* 카드 헤더 스타일 */
-            .card-header {
-                padding: 1.5rem;
-                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            }
+                    // 폼 제출 전 디버깅 로그
+                    const imageInput = document.getElementById('imagesAdmin');
+                    console.log('=== Admin 폼 제출 디버깅 ===');
+                    console.log('selectedFilesAdmin:', selectedFilesAdmin);
+                    console.log('imageInput.files:', imageInput.files);
+                    console.log('imageInput.files.length:', imageInput.files.length);
 
-            /* 폼 스타일 */
-            .form-control:focus {
-                border-color: #0d6efd;
-                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-            }
+                    // 버튼 상태 변경
+                    submitBtn.classList.add('d-none');
+                    loadingBtn.classList.remove('d-none');
 
-            .form-select:focus {
-                border-color: #0d6efd;
-                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-            }
+                    // FormData 생성
+                    const formData = new FormData(this);
 
-            /* 카테고리 미리보기 */
-            #categoryPreview .badge {
-                font-size: 0.9rem;
-                padding: 0.5rem 0.75rem;
-            }
-        </style>
-    @endpush
+                    // 선택된 파일들을 직접 FormData에 추가 (보험용)
+                    if (selectedFilesAdmin.length > 0) {
+                        console.log('Admin - Adding files directly to FormData:', selectedFilesAdmin.length);
+                        // 기존 images[] 필드 제거
+                        formData.delete('images[]');
+                        // 새로운 파일들 추가
+                        selectedFilesAdmin.forEach(file => {
+                            formData.append('images[]', file);
+                        });
+                    }
 
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const categorySelect = document.getElementById('categorySelect');
-                const categoryPreview = document.getElementById('categoryPreview');
-                const previewCategoryName = document.getElementById('previewCategoryName');
-                const previewCategoryBadge = document.getElementById('previewCategoryBadge');
-                const previewCategoryIcon = document.getElementById('previewCategoryIcon');
-                const deleteBtn = document.getElementById('deleteBtn');
-
-                // 카테고리 선택 시 미리보기 업데이트
-                if (categorySelect) {
-                    categorySelect.addEventListener('change', function() {
-                        const selectedOption = this.options[this.selectedIndex];
-                        const categoryName = selectedOption.text;
-                        const categoryColor = selectedOption.dataset.color;
-                        const categoryIcon = selectedOption.dataset.icon;
-
-                        if (selectedOption.value) {
-                            // 미리보기 표시
-                            if (previewCategoryName) previewCategoryName.textContent = categoryName;
-                            if (previewCategoryBadge) {
-                                previewCategoryBadge.style.backgroundColor = categoryColor;
-                                previewCategoryBadge.style.color = 'white';
-                            }
-
-                            if (previewCategoryIcon) {
-                                if (categoryIcon) {
-                                    previewCategoryIcon.className = categoryIcon + ' me-1';
-                                } else {
-                                    previewCategoryIcon.className = 'bi-tag me-1';
-                                }
-                            }
-
-                            if (categoryPreview) categoryPreview.style.display = 'block';
+                    // FormData 내용 확인
+                    console.log('FormData 최종 내용:');
+                    for (let [key, value] of formData.entries()) {
+                        if (key === 'images[]') {
+                            console.log(`  ${key}:`, value.name, value.size, 'bytes');
                         } else {
-                            // 미리보기 숨기기
-                            if (categoryPreview) categoryPreview.style.display = 'none';
+                            console.log(`  ${key}:`, value);
                         }
-                    });
+                    }
 
-                    // 페이지 로드 시 선택된 카테고리가 있으면 미리보기 표시
-                    if (categorySelect.value) {
-                        categorySelect.dispatchEvent(new Event('change'));
+                    // Laravel method spoofing for PUT request
+                    formData.append('_method', 'PUT');
+
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // 성공 시 바로 리다이렉트
+                            window.location.href = '{{ route("admin.cms.forum") }}';
+                        } else {
+                            throw new Error(data.message || '수정 중 오류가 발생했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('수정 중 오류가 발생했습니다: ' + error.message);
+
+                        // 버튼 상태 복원
+                        submitBtn.classList.remove('d-none');
+                        loadingBtn.classList.add('d-none');
+                    });
+                });
+            }
+        });
+
+        function initAdminImageUpload() {
+            const dropZone = document.getElementById('dropZoneAdmin');
+            const imageInput = document.getElementById('imagesAdmin');
+            const imagePreview = document.getElementById('newImagePreviewAdmin');
+            const imageList = document.getElementById('newImageListAdmin');
+            const imageCount = document.getElementById('newImageCountAdmin');
+
+            if (!dropZone || !imageInput) return;
+
+            // 드래그 앤 드롭 이벤트
+            dropZone.addEventListener('dragover', handleDragOverAdmin);
+            dropZone.addEventListener('dragleave', handleDragLeaveAdmin);
+            dropZone.addEventListener('drop', handleDropAdmin);
+
+            // 파일 입력 이벤트
+            imageInput.addEventListener('change', handleFileSelectAdmin);
+
+            // 클립보드 붙여넣기 이벤트 (전역)
+            document.addEventListener('paste', handlePasteAdmin);
+
+            function handleDragOverAdmin(e) {
+                e.preventDefault();
+                dropZone.classList.add('border-primary', 'bg-light');
+                dropZone.style.borderWidth = '2px';
+            }
+
+            function handleDragLeaveAdmin(e) {
+                e.preventDefault();
+                dropZone.classList.remove('border-primary', 'bg-light');
+                dropZone.style.borderWidth = '1px';
+            }
+
+            function handleDropAdmin(e) {
+                e.preventDefault();
+                dropZone.classList.remove('border-primary', 'bg-light');
+                dropZone.style.borderWidth = '1px';
+
+                const files = Array.from(e.dataTransfer.files);
+                addFilesAdmin(files);
+            }
+
+            function handleFileSelectAdmin(e) {
+                console.log('Admin - File select event:', e.target.files);
+                const files = Array.from(e.target.files);
+                console.log('Admin - Selected files:', files.map(f => ({name: f.name, size: f.size})));
+                addFilesAdmin(files);
+                // 파일 입력 필드 초기화 (같은 파일 재선택 가능하도록)
+                e.target.value = '';
+            }
+
+            function handlePasteAdmin(e) {
+                const items = e.clipboardData.items;
+                for (let item of items) {
+                    if (item.type.indexOf('image') !== -1) {
+                        e.preventDefault();
+                        const file = item.getAsFile();
+                        if (file) {
+                            // 클립보드 이미지에 이름 생성
+                            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                            const newFile = new File([file], `clipboard-${timestamp}.png`, { type: file.type });
+                            addFilesAdmin([newFile]);
+                        }
+                        break;
                     }
                 }
+            }
+        }
 
-                // AJAX 삭제 기능
-                if (deleteBtn) {
-                    deleteBtn.addEventListener('click', function() {
-                        const itemId = this.dataset.itemId;
-                        const itemTitle = this.dataset.itemTitle;
-
-                        // 삭제 확인
-                        if (!confirm(`정말로 '${itemTitle}' 글을 삭제하시겠습니까?`)) {
-                            return;
-                        }
-
-                        // 버튼 비활성화
-                        this.disabled = true;
-                        this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> 삭제 중...';
-
-                        // CSRF 토큰 가져오기
-                        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-                        // AJAX 요청
-                        fetch(`{{ route('admin.cms.forum.destroy', ':id') }}`.replace(':id', itemId), {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': token,
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // 성공 메시지 표시 후 목록으로 이동
-                                alert(data.message || '포럼 글이 삭제되었습니다.');
-                                window.location.href = '{{ route("admin.cms.forum") }}';
-                            } else {
-                                // 오류 메시지 표시
-                                alert(data.message || '삭제에 실패했습니다.');
-                                // 버튼 복원
-                                this.disabled = false;
-                                this.innerHTML = '<i class="bi bi-trash me-1"></i> 삭제';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Delete error:', error);
-                            alert('삭제 중 오류가 발생했습니다.');
-                            // 버튼 복원
-                            this.disabled = false;
-                            this.innerHTML = '<i class="bi bi-trash me-1"></i> 삭제';
-                        });
-                    });
+        function addFilesAdmin(files) {
+            for (let file of files) {
+                // 파일 개수 제한 확인
+                if (selectedFilesAdmin.length >= maxFilesAdmin) {
+                    alert(`최대 ${maxFilesAdmin}개의 이미지만 업로드할 수 있습니다.`);
+                    break;
                 }
+
+                // 이미지 파일인지 확인
+                if (!file.type.startsWith('image/')) {
+                    alert(`"${file.name}"은 이미지 파일이 아닙니다.`);
+                    continue;
+                }
+
+                // 파일 크기 확인
+                if (file.size > maxFileSizeAdmin) {
+                    alert(`"${file.name}"이 {{ $forumSettings['max_file_size_mb'] ?? 5 }}MB를 초과합니다.`);
+                    continue;
+                }
+
+                // 중복 파일 확인 (이름과 크기로)
+                const isDuplicate = selectedFilesAdmin.some(f => f.name === file.name && f.size === file.size);
+                if (isDuplicate) {
+                    alert(`"${file.name}"은 이미 추가된 파일입니다.`);
+                    continue;
+                }
+
+                // 파일 추가
+                selectedFilesAdmin.push(file);
+            }
+
+            updateNewImagePreviewAdmin();
+            updateFileInputAdmin();
+        }
+
+        function updateNewImagePreviewAdmin() {
+            const imagePreview = document.getElementById('newImagePreviewAdmin');
+            const imageList = document.getElementById('newImageListAdmin');
+            const imageCount = document.getElementById('newImageCountAdmin');
+
+            if (selectedFilesAdmin.length === 0) {
+                imagePreview.style.display = 'none';
+                return;
+            }
+
+            imagePreview.style.display = 'block';
+            imageCount.textContent = selectedFilesAdmin.length;
+            imageList.innerHTML = '';
+
+            selectedFilesAdmin.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-3 col-sm-4 col-6';
+                    col.innerHTML = `
+                        <div class="card">
+                            <img src="${e.target.result}" class="card-img-top" style="height: 120px; object-fit: cover;">
+                            <div class="card-body p-2">
+                                <small class="text-muted d-block text-truncate" title="${file.name}">${file.name}</small>
+                                <small class="text-muted">${(file.size / 1024).toFixed(1)} KB</small>
+                                <button type="button" class="btn btn-sm btn-danger float-end" onclick="removeNewImageByIndexAdmin(${index})">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    imageList.appendChild(col);
+                };
+                reader.readAsDataURL(file);
             });
-        </script>
-    @endpush
+        }
+
+        function updateFileInputAdmin() {
+            const imageInput = document.getElementById('imagesAdmin');
+            if (!imageInput) return;
+
+            // DataTransfer를 사용하여 FileList 객체 생성
+            try {
+                const dt = new DataTransfer();
+                selectedFilesAdmin.forEach(file => {
+                    dt.items.add(file);
+                });
+                imageInput.files = dt.files;
+
+                // 디버깅 로그 추가
+                console.log('Admin - Updated file input:', {
+                    selectedFilesCount: selectedFilesAdmin.length,
+                    inputFilesCount: imageInput.files.length,
+                    fileNames: Array.from(imageInput.files).map(f => f.name || 'Unknown'),
+                    files: Array.from(imageInput.files)
+                });
+            } catch (error) {
+                console.error('Admin - Error updating file input:', error);
+            }
+        }
+
+        function removeNewImageByIndexAdmin(index) {
+            selectedFilesAdmin.splice(index, 1);
+            updateNewImagePreviewAdmin();
+            updateFileInputAdmin();
+        }
+
+        // 기존 이미지 제거 함수
+        function removeExistingImage(imageId, button) {
+            if (confirm('이 이미지를 삭제하시겠습니까?')) {
+                // 이미지 카드 제거
+                const imageCard = button.closest('[data-image-id]');
+                imageCard.remove();
+
+                // 삭제할 이미지 ID 목록에 추가
+                removedImageIds.push(imageId);
+                document.getElementById('removeImageIds').value = removedImageIds.join(',');
+
+                // 기존 이미지 개수 업데이트
+                const existingCount = document.querySelectorAll('#existingImagesContainer [data-image-id]').length;
+                const existingImageCountEl = document.getElementById('existingImageCount');
+                if (existingImageCountEl) {
+                    existingImageCountEl.textContent = existingCount;
+                }
+
+                // 기존 이미지가 모두 삭제되면 컨테이너 숨기기
+                if (existingCount === 0) {
+                    const existingImagesContainer = document.querySelector('#existingImagesContainer').closest('.mb-4');
+                    if (existingImagesContainer) {
+                        existingImagesContainer.style.display = 'none';
+                    }
+                }
+            }
+        }
+    </script>
 @endsection
