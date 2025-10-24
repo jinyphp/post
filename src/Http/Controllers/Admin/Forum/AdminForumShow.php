@@ -38,7 +38,7 @@ class AdminForumShow extends Controller
         $row = DB::table($this->table)->where('id', $id)->first();
 
         if (!$row) {
-            return redirect()->route('admin.cms.forum')
+            return redirect()->route('admin.cms.forum.index')
                            ->with('error', '요청하신 포럼 글을 찾을 수 없습니다.');
         }
 

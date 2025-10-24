@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
  * @since 1.0.0
  *
  * Routes:
- * - POST /admin/cms/forum (admin.cms.forum.store)
+ * - POST /admin/cms/forum (admin.cms.forum.index.store)
  *
  * Response Types:
  * - AJAX 요청: JSON 응답 (성공: 201, 실패: 422/500)
@@ -166,7 +166,7 @@ class AdminForumStore extends Controller
              * 성공 시 포럼 목록 페이지로 이동하며,
              * 세션에 성공 메시지를 저장합니다.
              */
-            return redirect()->route('admin.cms.forum')
+            return redirect()->route('admin.cms.forum.index')
                 ->with('success', '포럼 글이 생성되었습니다.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {

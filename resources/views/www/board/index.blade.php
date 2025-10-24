@@ -115,6 +115,12 @@
                                                     <span class="badge bg-success ms-1">
                                                         하위글 Lv{{ $row->level }}
                                                     </span>
+                                                    @if(isset($imageCounts[$row->id]) && $imageCounts[$row->id] > 0)
+                                                        <span class="badge bg-info ms-1" title="이미지 {{ $imageCounts[$row->id] }}개">🖼️ {{ $imageCounts[$row->id] }}</span>
+                                                    @endif
+                                                    @if(isset($attachmentCounts[$row->id]) && $attachmentCounts[$row->id] > 0)
+                                                        <span class="badge bg-warning ms-1" title="첨부파일 {{ $attachmentCounts[$row->id] }}개">📎 {{ $attachmentCounts[$row->id] }}</span>
+                                                    @endif
                                                 </div>
                                             @else
                                                 <a href="{{ route('board.show', [$code, $row->id]) }}"
@@ -126,6 +132,12 @@
                                                 @endif
                                                 @if(isset($commentCounts[$row->id]) && $commentCounts[$row->id] > 0)
                                                     <span class="badge bg-success ms-1" title="코멘트">💬 {{ $commentCounts[$row->id] }}</span>
+                                                @endif
+                                                @if(isset($imageCounts[$row->id]) && $imageCounts[$row->id] > 0)
+                                                    <span class="badge bg-info ms-1" title="이미지 {{ $imageCounts[$row->id] }}개">🖼️ {{ $imageCounts[$row->id] }}</span>
+                                                @endif
+                                                @if(isset($attachmentCounts[$row->id]) && $attachmentCounts[$row->id] > 0)
+                                                    <span class="badge bg-warning ms-1" title="첨부파일 {{ $attachmentCounts[$row->id] }}개">📎 {{ $attachmentCounts[$row->id] }}</span>
                                                 @endif
                                             @endif
                                         </td>

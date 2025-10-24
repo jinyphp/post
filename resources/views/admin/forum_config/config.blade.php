@@ -20,7 +20,7 @@
             <p class="text-muted mb-0">포럼 정책과 기본 설정을 관리합니다.</p>
         </div>
         <div>
-            <a href="{{ route('admin.cms.forum') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.cms.forum.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left me-1"></i> 포럼 관리
             </a>
         </div>
@@ -101,7 +101,7 @@
     <!-- 설정 폼 -->
     <x-content>
         <x-content-main>
-            <x-form-put action="{{ route('admin.cms.forum.config.update') }}">
+            <x-form-put action="{{ route('admin.cms.forum.index.config.update') }}">
                 <!-- 작성 권한 정책 -->
                 <x-card>
                     <x-card-header>

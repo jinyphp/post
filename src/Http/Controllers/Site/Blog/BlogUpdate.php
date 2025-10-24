@@ -338,13 +338,7 @@ class BlogUpdate extends Controller
             try {
                 // 계층화된 경로 생성: blog/YYYY/MM/DD/HH/
                 $now = now();
-                $hierarchicalPath = sprintf(
-                    'blog/%04d/%02d/%02d/%02d',
-                    $now->year,
-                    $now->month,
-                    $now->day,
-                    $now->hour
-                );
+                $hierarchicalPath = "blog/{$now->year}/{$now->month}/{$now->day}/{$blogId}";
 
                 // UUID 기반 파일명 생성
                 $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();

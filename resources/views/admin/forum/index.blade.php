@@ -10,7 +10,7 @@
             <p class="text-muted mb-0">{{ $config['subtitle'] ?? '' }}</p>
         </div>
         <div>
-            <a href="{{ route('admin.cms.forum.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.cms.forum.index.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i> 신규 등록
             </a>
         </div>
@@ -66,7 +66,7 @@
                             @if(count($categories ?? []) > 0)
                                 <li><hr class="dropdown-divider"></li>
                             @endif
-                            <li><a class="dropdown-item" href="{{ route('admin.cms.forum') }}">전체 보기</a></li>
+                            <li><a class="dropdown-item" href="{{ route('admin.cms.forum.index') }}">전체 보기</a></li>
                         </ul>
                     </div>
                 </div>
@@ -141,11 +141,11 @@
                                 </td>
                                 <td width='120' class="text-center pe-4">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('admin.cms.forum.edit', $item->id) }}"
+                                        <a href="{{ route('admin.cms.forum.index.edit', $item->id) }}"
                                            class="btn btn-outline-primary" title="수정">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('admin.cms.forum.destroy', $item->id) }}"
+                                        <form action="{{ route('admin.cms.forum.index.destroy', $item->id) }}"
                                               method="POST"
                                               onsubmit="return confirm('정말 삭제하시겠습니까?');"
                                               class="d-inline">

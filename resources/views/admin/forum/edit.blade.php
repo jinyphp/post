@@ -6,7 +6,7 @@
     <div class="container-fluid">
 
         <x-heading title="포럼 글 수정" :subtitle="$item->title . ' 글을 수정합니다.'">
-            <x-btn-back-to-list :route="route('admin.cms.forum')">
+            <x-btn-back-to-list :route="route('admin.cms.forum.index')">
                 목록
             </x-btn-back-to-list>
         </x-heading>
@@ -22,7 +22,7 @@
 
         <x-content>
             <x-content-main>
-                <form id="forumEditForm" action="{{ route('admin.cms.forum.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                <form id="forumEditForm" action="{{ route('admin.cms.forum.index.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -77,7 +77,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="flex-shrink-0">
-                                                    <a href="{{ route('admin.cms.forum.category') }}"
+                                                    <a href="{{ route('admin.cms.forum.index.category') }}"
                                                         class="btn btn-outline-secondary" title="카테고리 관리">
                                                         <i class="bi bi-gear"></i>
                                                     </a>
@@ -85,7 +85,7 @@
                                             </div>
                                             <div class="form-text">
                                                 카테고리가 없으면
-                                                <a href="{{ route('admin.cms.forum.category.create') }}" target="_blank">여기서</a>
+                                                <a href="{{ route('admin.cms.forum.index.category.create') }}" target="_blank">여기서</a>
                                                 신규로 작성하세요.
                                             </div>
                                         </div>
@@ -399,7 +399,7 @@
                     .then(data => {
                         if (data.success) {
                             // 성공 시 바로 리다이렉트
-                            window.location.href = '{{ route("admin.cms.forum") }}';
+                            window.location.href = '{{ route("admin.cms.forum.index") }}';
                         } else {
                             throw new Error(data.message || '수정 중 오류가 발생했습니다.');
                         }

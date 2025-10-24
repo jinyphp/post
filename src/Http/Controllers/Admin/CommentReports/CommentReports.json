@@ -1,0 +1,385 @@
+{
+    "title": "댓글 신고 관리",
+    "subtitle": "게시판 댓글 신고 내역 및 처리 관리",
+    "description": "사용자가 신고한 댓글을 검토하고 적절한 조치를 취할 수 있는 관리 시스템입니다.",
+    "route": {
+        "name": "admin.cms.board.comment.reports.index",
+        "prefix": "admin/cms/board/comment/reports",
+        "actions": {
+            "index": "index",
+            "show": "show",
+            "approve": "approve",
+            "reject": "reject",
+            "destroy": "delete"
+        }
+    },
+    "table": {
+        "name": "site_board_comment_reports",
+        "primaryKey": "id",
+        "timestamps": true,
+        "softDeletes": false,
+        "fillable": [
+            "board_code",
+            "comment_id",
+            "reporter_name",
+            "reporter_email",
+            "reason",
+            "description",
+            "status",
+            "reviewed_by",
+            "reviewed_at"
+        ],
+        "guarded": [
+            "id",
+            "created_at",
+            "updated_at"
+        ],
+        "hidden": [],
+        "where": {
+            "default": [],
+            "conditions": []
+        },
+        "casts": {
+            "reviewed_at": "datetime",
+            "created_at": "datetime",
+            "updated_at": "datetime"
+        }
+    },
+    "template": {
+        "layout": "jiny-site::layouts.admin.sidebar",
+        "index": "jiny-admin::template.index",
+        "show": "jiny-post::admin.admin_comment_reports.show"
+    },
+    "index": {
+        "tableLayoutPath": "jiny-post::admin.admin_comment_reports.table-wrapper",
+        "tablePath": "jiny-post::admin.admin_comment_reports.table",
+        "searchLayoutPath": "jiny-admin::template.livewire.admin-search",
+        "searchFormPath": "jiny-post::admin.admin_comment_reports.search",
+        "searchable": [
+            "reporter_name",
+            "reporter_email",
+            "reason",
+            "board_code"
+        ],
+        "sortable": [
+            "id",
+            "board_code",
+            "reporter_name",
+            "reason",
+            "status",
+            "created_at",
+            "reviewed_at"
+        ],
+        "filterable": [
+            "status",
+            "reason",
+            "board_code"
+        ],
+        "heading": {
+            "title": "댓글 신고 관리",
+            "description": "사용자가 신고한 댓글을 검토하고 처리합니다"
+        },
+        "features": {
+            "enableCreate": false,
+            "enableDelete": true,
+            "enableEdit": false,
+            "enableSearch": true,
+            "enableSort": true,
+            "enablePagination": true,
+            "enableBulkActions": true,
+            "enableExport": true,
+            "enableImport": false,
+            "enableStatusToggle": false,
+            "enableSettingsDrawer": true
+        },
+        "pagination": {
+            "perPage": 20,
+            "options": [
+                10,
+                25,
+                50,
+                100
+            ]
+        },
+        "sorting": {
+            "default": "created_at",
+            "direction": "desc"
+        },
+        "search": {
+            "placeholder": "신고자명, 이메일, 사유, 게시판 검색...",
+            "debounce": 300
+        },
+        "filters": {
+            "status": {
+                "label": "처리상태",
+                "options": {
+                    "": "전체",
+                    "pending": "대기중",
+                    "approved": "승인됨",
+                    "rejected": "거부됨"
+                }
+            },
+            "reason": {
+                "label": "신고사유",
+                "options": {
+                    "": "전체",
+                    "spam": "스팸",
+                    "inappropriate": "부적절한 내용",
+                    "abuse": "욕설/비방",
+                    "copyright": "저작권 침해",
+                    "other": "기타"
+                }
+            },
+            "date_range": {
+                "label": "신고일시",
+                "type": "daterange",
+                "options": {
+                    "today": "오늘",
+                    "yesterday": "어제",
+                    "last_7_days": "최근 7일",
+                    "last_30_days": "최근 30일",
+                    "this_month": "이번 달",
+                    "last_month": "지난 달"
+                }
+            }
+        },
+        "table": {
+            "columns": {
+                "checkbox": {
+                    "visible": true,
+                    "width": "50px"
+                },
+                "id": {
+                    "label": "ID",
+                    "visible": true,
+                    "sortable": true,
+                    "width": "80px"
+                },
+                "board_code": {
+                    "label": "게시판",
+                    "visible": true,
+                    "sortable": true,
+                    "width": "100px"
+                },
+                "comment_content": {
+                    "label": "댓글 내용",
+                    "visible": true,
+                    "searchable": false,
+                    "truncate": 100
+                },
+                "comment_author": {
+                    "label": "댓글 작성자",
+                    "visible": true,
+                    "responsive": "lg",
+                    "width": "120px"
+                },
+                "reporter_name": {
+                    "label": "신고자",
+                    "visible": true,
+                    "sortable": true,
+                    "searchable": true,
+                    "width": "120px"
+                },
+                "reason": {
+                    "label": "신고사유",
+                    "visible": true,
+                    "sortable": true,
+                    "badge": {
+                        "spam": "warning",
+                        "inappropriate": "danger",
+                        "abuse": "danger",
+                        "copyright": "info",
+                        "other": "secondary"
+                    }
+                },
+                "description": {
+                    "label": "상세내용",
+                    "visible": true,
+                    "responsive": "xl",
+                    "truncate": 50
+                },
+                "status": {
+                    "label": "처리상태",
+                    "visible": true,
+                    "sortable": true,
+                    "badge": {
+                        "pending": "warning",
+                        "approved": "success",
+                        "rejected": "secondary"
+                    }
+                },
+                "created_at": {
+                    "label": "신고일시",
+                    "visible": true,
+                    "sortable": true,
+                    "responsive": "md",
+                    "format": "Y-m-d H:i"
+                },
+                "reviewed_at": {
+                    "label": "처리일시",
+                    "visible": true,
+                    "sortable": true,
+                    "responsive": "lg",
+                    "format": "Y-m-d H:i"
+                },
+                "actions": {
+                    "label": "작업",
+                    "visible": true,
+                    "width": "200px",
+                    "buttons": {
+                        "show": {
+                            "label": "상세",
+                            "icon": "eye",
+                            "class": "btn-sm btn-info"
+                        },
+                        "approve": {
+                            "label": "승인",
+                            "icon": "check",
+                            "class": "btn-sm btn-success",
+                            "condition": "status:pending"
+                        },
+                        "reject": {
+                            "label": "거부",
+                            "icon": "x",
+                            "class": "btn-sm btn-warning",
+                            "condition": "status:pending"
+                        },
+                        "delete": {
+                            "label": "삭제",
+                            "icon": "trash",
+                            "class": "btn-sm btn-danger"
+                        }
+                    }
+                }
+            }
+        },
+        "stats": {
+            "enabled": true,
+            "cards": [
+                {
+                    "label": "대기중인 신고",
+                    "query": "pending_reports",
+                    "icon": "exclamation-triangle",
+                    "color": "warning"
+                },
+                {
+                    "label": "승인된 신고",
+                    "query": "approved_reports",
+                    "icon": "check-circle",
+                    "color": "success"
+                },
+                {
+                    "label": "거부된 신고",
+                    "query": "rejected_reports",
+                    "icon": "x-circle",
+                    "color": "secondary"
+                },
+                {
+                    "label": "오늘 신고",
+                    "query": "today_reports",
+                    "icon": "calendar",
+                    "color": "info"
+                }
+            ]
+        }
+    },
+    "show": {
+        "heading": {
+            "title": "댓글 신고 상세",
+            "description": "댓글 신고 상세 정보를 확인합니다"
+        },
+        "showLayoutPath": "jiny-admin::template.livewire.admin-show",
+        "showPath": "jiny-post::admin.admin_comment_reports.show",
+        "enableEdit": false,
+        "enableDelete": true,
+        "enableListButton": true,
+        "enableSettingsDrawer": true,
+        "enableApprove": true,
+        "enableReject": true,
+        "display": {
+            "datetimeFormat": "Y-m-d H:i:s",
+            "sections": [
+                {
+                    "title": "신고 정보",
+                    "fields": [
+                        "id",
+                        "board_code",
+                        "comment_id",
+                        "reason",
+                        "description",
+                        "status"
+                    ]
+                },
+                {
+                    "title": "신고자 정보",
+                    "fields": [
+                        "reporter_name",
+                        "reporter_email",
+                        "created_at"
+                    ]
+                },
+                {
+                    "title": "처리 정보",
+                    "fields": [
+                        "reviewed_by",
+                        "reviewed_at",
+                        "updated_at"
+                    ]
+                }
+            ],
+            "dateFormat": "Y-m-d H:i:s",
+            "booleanLabels": {
+                "true": "예",
+                "false": "아니오"
+            }
+        },
+        "settingsDrawer": {
+            "enableFieldToggle": true,
+            "enableDateFormat": true,
+            "enableSectionToggle": true
+        }
+    },
+    "destroy": {
+        "enableSoftDelete": false,
+        "enableTransaction": true,
+        "requireConfirmation": true,
+        "confirmation": {
+            "message": "이 신고를 삭제하시겠습니까?"
+        },
+        "messages": {
+            "success": "신고가 삭제되었습니다.",
+            "error": "신고 삭제 중 오류가 발생했습니다: %s",
+            "confirmRequired": "삭제 확인이 필요합니다."
+        }
+    },
+    "approve": {
+        "enableTransaction": true,
+        "requireConfirmation": true,
+        "confirmation": {
+            "message": "이 신고를 승인하고 해당 댓글을 숨김 처리하시겠습니까?"
+        },
+        "messages": {
+            "success": "신고가 승인되었고, 해당 댓글이 숨김 처리되었습니다.",
+            "error": "신고 승인 중 오류가 발생했습니다: %s",
+            "notAllowed": "대기중인 신고만 승인할 수 있습니다."
+        },
+        "allowedStatuses": [
+            "pending"
+        ]
+    },
+    "reject": {
+        "enableTransaction": true,
+        "requireConfirmation": true,
+        "confirmation": {
+            "message": "이 신고를 거부하시겠습니까?"
+        },
+        "messages": {
+            "success": "신고가 거부되었습니다.",
+            "error": "신고 거부 중 오류가 발생했습니다: %s",
+            "notAllowed": "대기중인 신고만 거부할 수 있습니다."
+        },
+        "allowedStatuses": [
+            "pending"
+        ]
+    }
+}

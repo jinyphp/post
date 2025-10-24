@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
-use Jiny\Post\Http\Controllers\Site\BoardTable\BoardPermissions;
+use Jiny\Post\Http\Controllers\Site\BoardPost\BoardPermissions;
 
 /**
  * 게시판 대시보드 컨트롤러

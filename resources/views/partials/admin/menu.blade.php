@@ -14,21 +14,27 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.board.list') }}">
+                <a class="nav-link" href="{{ route('admin.cms.board.list.index') }}">
                     <i class="bi bi-layout-text-sidebar me-2"></i>
                     게시판 목록
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.board.related') }}">
+                <a class="nav-link" href="{{ route('admin.cms.board.related.index') }}">
                     <i class="bi bi-link-45deg me-2"></i>
                     관련글
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.board.trend') }}">
+                <a class="nav-link" href="{{ route('admin.cms.board.trend.index') }}">
                     <i class="bi bi-graph-up-arrow me-2"></i>
                     트렌드글
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.cms.board.comment.reports.index') }}">
+                    <i class="bi bi-flag me-2"></i>
+                    댓글 신고 관리
                 </a>
             </li>
         </ul>
@@ -45,19 +51,19 @@
     <div id="navForum" class="collapse" data-bs-parent="#sideNavbar">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.forum') }}">
+                <a class="nav-link" href="{{ route('admin.cms.forum.index') }}">
                     <i class="bi bi-chat-square-text me-2"></i>
                     포럼 글
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.forum.category') }}">
+                <a class="nav-link" href="{{ route('admin.cms.forum.category.index') }}">
                     <i class="bi bi-tags me-2"></i>
                     포럼 카테고리
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.forum.config') }}">
+                <a class="nav-link" href="{{ route('admin.cms.forum.config.index') }}">
                     <i class="bi bi-gear me-2"></i>
                     포럼 설정
                 </a>
@@ -76,19 +82,19 @@
     <div id="navBlog" class="collapse" data-bs-parent="#sideNavbar">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.blog') }}">
+                <a class="nav-link" href="{{ route('admin.cms.blog.index') }}">
                     <i class="bi bi-journal-text me-2"></i>
                     블로그 글
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.blog.category') }}">
+                <a class="nav-link" href="{{ route('admin.cms.blog.category.index') }}">
                     <i class="bi bi-bookmark-star me-2"></i>
                     블로그 카테고리
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.cms.blog.config') }}">
+                <a class="nav-link" href="{{ route('admin.cms.blog.config.index') }}">
                     <i class="bi bi-gear me-2"></i>
                     블로그 설정
                 </a>

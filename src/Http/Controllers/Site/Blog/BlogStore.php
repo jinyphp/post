@@ -160,6 +160,8 @@ class BlogStore extends Controller
 
             // 다중 이미지를 별도 테이블에 저장
             if (!empty($uploadedImages)) {
+                // 이미지를 temp에서 실제 경로로 이동
+                $uploadedImages = $this->moveImagesToFinalPath($uploadedImages, $blogId);
                 $this->saveBlogImages($blogId, $uploadedImages);
             }
 
@@ -238,15 +240,10 @@ class BlogStore extends Controller
                 break; // 설정된 최대 개수 초과 시 중단
             }
             try {
-                // 계층화된 경로 생성: blog/YYYY/MM/DD/HH/
+                // 계층화된 경로 생성: blog/{year}/{month}/{day}/temp/
+                // 나중에 실제 blogId로 이동됩니다
                 $now = now();
-                $hierarchicalPath = sprintf(
-                    'blog/%04d/%02d/%02d/%02d',
-                    $now->year,
-                    $now->month,
-                    $now->day,
-                    $now->hour
-                );
+                $hierarchicalPath = "blog/{$now->year}/{$now->month}/{$now->day}/temp";
 
                 // UUID 기반 파일명 생성
                 $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
@@ -282,6 +279,58 @@ class BlogStore extends Controller
         }
 
         return $uploadedImages;
+    }
+
+    /**
+     * 이미지를 temp 디렉토리에서 실제 경로로 이동
+     */
+    protected function moveImagesToFinalPath($uploadedImages, $blogId)
+    {
+        $movedImages = [];
+        $now = now();
+
+        foreach ($uploadedImages as $image) {
+            try {
+                $oldPath = $image['path'];
+
+                // 새 경로 생성: blog/{year}/{month}/{day}/{blogId}/
+                $newDir = "blog/{$now->year}/{$now->month}/{$now->day}/{$blogId}";
+                $newPath = $newDir . '/' . $image['filename'];
+
+                // 디렉토리 생성
+                if (!Storage::disk('public')->exists($newDir)) {
+                    Storage::disk('public')->makeDirectory($newDir);
+                }
+
+                // 파일 이동
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->move($oldPath, $newPath);
+
+                    // 경로 정보 업데이트
+                    $image['path'] = $newPath;
+                    $image['url'] = asset('storage/' . $newPath);
+
+                    \Log::info('Blog image moved successfully:', [
+                        'from' => $oldPath,
+                        'to' => $newPath,
+                        'blog_id' => $blogId
+                    ]);
+                }
+
+                $movedImages[] = $image;
+
+            } catch (\Exception $e) {
+                \Log::error('Failed to move blog image:', [
+                    'error' => $e->getMessage(),
+                    'blog_id' => $blogId,
+                    'image' => $image
+                ]);
+                // 이동 실패해도 원래 경로로 추가
+                $movedImages[] = $image;
+            }
+        }
+
+        return $movedImages;
     }
 
     /**

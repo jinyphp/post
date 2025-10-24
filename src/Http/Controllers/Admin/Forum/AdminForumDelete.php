@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
  * @since 1.0.0
  *
  * Routes:
- * - DELETE /admin/cms/forum/{id} (admin.cms.forum.destroy)
+ * - DELETE /admin/cms/forum/{id} (admin.cms.forum.index.destroy)
  *
  * Response Types:
  * - AJAX 요청: JSON 응답 (성공: 200, 실패: 404/500)
@@ -85,7 +85,7 @@ class AdminForumDelete extends Controller
                 }
 
                 // Form Submit: 리다이렉션
-                return redirect()->route('admin.cms.forum')
+                return redirect()->route('admin.cms.forum.index')
                     ->with('error', '요청하신 포럼 글을 찾을 수 없습니다.');
             }
 
@@ -159,7 +159,7 @@ class AdminForumDelete extends Controller
                     'data' => [
                         'id' => (int) $id,
                         'affected_rows' => $affected,
-                        'redirect' => route('admin.cms.forum')
+                        'redirect' => route('admin.cms.forum.index')
                     ]
                 ], 200);
             }
@@ -170,7 +170,7 @@ class AdminForumDelete extends Controller
              * 성공 시 포럼 목록 페이지로 이동하며,
              * 세션에 성공 메시지를 저장합니다.
              */
-            return redirect()->route('admin.cms.forum')
+            return redirect()->route('admin.cms.forum.index')
                 ->with('success', '포럼 글이 삭제되었습니다.');
 
         } catch (\Exception $e) {
@@ -207,7 +207,7 @@ class AdminForumDelete extends Controller
              * 오류 발생 시 포럼 목록 페이지로 이동하며,
              * 세션에 오류 메시지를 저장합니다.
              */
-            return redirect()->route('admin.cms.forum')
+            return redirect()->route('admin.cms.forum.index')
                 ->with('error', '포럼 글 삭제 중 오류가 발생했습니다.');
         }
     }

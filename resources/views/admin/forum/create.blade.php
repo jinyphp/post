@@ -6,7 +6,7 @@
     <div class="container-fluid">
 
         <x-heading title="포럼 글 등록" :subtitle="$config['subtitle'] ?? ''">
-            <x-btn-back-to-list :route="route('admin.cms.forum')">
+            <x-btn-back-to-list :route="route('admin.cms.forum.index')">
                 목록
             </x-btn-back-to-list>
         </x-heading>
@@ -22,7 +22,7 @@
 
         <x-content>
             <x-content-main>
-                <form id="forumCreateForm" action="{{ route('admin.cms.forum.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="forumCreateForm" action="{{ route('admin.cms.forum.index.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="card border-0 shadow-sm">
@@ -82,7 +82,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="flex-shrink-0">
-                                                        <a href="{{ route('admin.cms.forum.category') }}"
+                                                        <a href="{{ route('admin.cms.forum.index.category') }}"
                                                             class="btn btn-outline-secondary" title="카테고리 관리">
                                                             <i class="bi bi-gear"></i>
                                                         </a>
@@ -90,7 +90,7 @@
                                                 </div>
                                                 <div class="form-text">
                                                     카테고리가 없으면
-                                                    <a href="{{ route('admin.cms.forum.category.create') }}"
+                                                    <a href="{{ route('admin.cms.forum.index.category.create') }}"
                                                         target="_blank">여기서 생성</a>하세요.
                                                 </div>
                                                 <!-- 선택된 카테고리 미리보기 -->
@@ -254,7 +254,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-3">
-                        <a href="{{ route('admin.cms.forum') }}" class="btn btn-secondary">취소</a>
+                        <a href="{{ route('admin.cms.forum.index') }}" class="btn btn-secondary">취소</a>
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="bi bi-check-circle me-1"></i> 등록
                         </button>
@@ -477,7 +477,7 @@
                             .then(data => {
                                 if (data.success) {
                                     // 성공 시 바로 목록 페이지로 이동
-                                    window.location.href = '{{ route('admin.cms.forum') }}';
+                                    window.location.href = '{{ route('admin.cms.forum.index') }}';
                                 } else {
                                     // 실패 시 오류 메시지 표시
                                     showErrorMessage(data.message);

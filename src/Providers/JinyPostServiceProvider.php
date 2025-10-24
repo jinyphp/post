@@ -5,6 +5,7 @@ namespace Jiny\Post\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Blade;
+use Livewire\Livewire;
 
 class JinyPostServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,9 @@ class JinyPostServiceProvider extends ServiceProvider
 
         // Register Blade components
         $this->loadBladeComponents();
+
+        // Livewire 컴포넌트 등록 (AppServiceProvider에서 처리됨)
+        // Livewire::component('jiny-post::board-comment', \Jiny\Post\Http\Livewire\BoardComment::class);
 
         // Publish configuration
         if ($this->app->runningInConsole()) {
@@ -66,6 +70,7 @@ class JinyPostServiceProvider extends ServiceProvider
 
         // Register BlogConfig alias
         $this->app->alias('blog.config', \Jiny\Post\Services\BlogConfigManager::class);
+
     }
 
     /**
@@ -115,6 +120,7 @@ class JinyPostServiceProvider extends ServiceProvider
         Blade::component('jiny-post::components.btn-reset', 'btn-reset');
         Blade::component('jiny-post::components.heading', 'heading');
     }
+
 
     /**
      * Get the services provided by the provider.

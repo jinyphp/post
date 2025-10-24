@@ -253,8 +253,10 @@ class ForumStore extends Controller
                 // 파일명 생성 (중복 방지)
                 $filename = time() . '_' . $index . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
 
-                // 저장 경로
-                $path = $image->storeAs('forum', $filename, 'public');
+                // 계층적 저장 경로: forum/{year}/{month}/{day}/{postId}/
+                $now = now();
+                $hierarchicalPath = "forum/{$now->year}/{$now->month}/{$now->day}/{$forumId}";
+                $path = $image->storeAs($hierarchicalPath, $filename, 'public');
 
                 if ($path) {
                     $uploadedImages[] = [

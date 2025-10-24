@@ -2,207 +2,270 @@
 
 use Illuminate\Support\Facades\Route;
 
+/**
+ * ====================================
+ * CMS 관리자 라우트 계층 구조
+ * ====================================
+ *
+ * admin/cms/
+ * ├── board/          (게시판 시스템)
+ * │   ├── dashboard   (대시보드)
+ * │   ├── list/       (게시판 목록 관리)
+ * │   ├── posts/      (게시글 관리)
+ * │   ├── related/    (관련글 관리)
+ * │   └── trend/      (트렌드글 관리)
+ * ├── forum/          (포럼 시스템)
+ * │   ├── config/     (포럼 설정)
+ * │   ├── category/   (카테고리 관리)
+ * │   └── posts/      (포럼 글 관리)
+ * └── blog/           (블로그 시스템)
+ *     ├── config/     (블로그 설정)
+ *     ├── category/   (카테고리 관리)
+ *     ├── posts/      (블로그 글 관리)
+ *     └── comment/    (댓글 관리)
+ */
+
+// =====================================
+// 공통 관리자 기능
+// =====================================
+
 // CSRF 토큰 새로고침 엔드포인트
 Route::middleware(['admin'])->get('/admin/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);
 });
 
-/**
- * Board (게시판) 관리 라우트
- *
- * @description
- * 다중 게시판 시스템을 관리하는 라우트입니다.
- * 게시판 설정, 게시글, 관련글, 트렌드글 등을 관리합니다.
- */
-Route::middleware(['admin'])->prefix('admin/cms/board')->name('admin.cms.board.')->group(function () {
-    // 대시보드
-    Route::get('/', \Jiny\Post\Http\Controllers\Admin\Board\AdminSiteBoardDashboard::class)
-        ->name('dashboard');
+// =====================================
+// CMS 관리자 라우트 그룹
+// =====================================
+Route::middleware(['admin'])->prefix('admin/cms')->name('admin.cms.')->group(function () {
 
-    // 게시판 목록 - RESTful 라우트 (다중 게시판 관리)
-    Route::get('/list', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoard::class, 'index'])
-        ->name('list');
-    Route::get('/list/create', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoard::class, 'create'])
-        ->name('list.create');
-    Route::post('/list', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoard::class, 'store'])
-        ->name('list.store');
-    Route::get('/list/{id}/edit', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoard::class, 'edit'])
-        ->name('list.edit');
-    Route::put('/list/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoard::class, 'update'])
-        ->name('list.update');
-    Route::delete('/list/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoard::class, 'destroy'])
-        ->name('list.destroy');
+    // =====================================
+    // Board (게시판) 관리 시스템
+    // =====================================
+    Route::prefix('board')->name('board.')->group(function () {
 
-    // 관련글 관리 - RESTful 라우트
-    Route::get('/related', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardRelated::class, 'index'])
-        ->name('related');
-    Route::get('/related/create', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardRelated::class, 'create'])
-        ->name('related.create');
-    Route::post('/related', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardRelated::class, 'store'])
-        ->name('related.store');
-    Route::get('/related/{id}/edit', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardRelated::class, 'edit'])
-        ->name('related.edit');
-    Route::put('/related/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardRelated::class, 'update'])
-        ->name('related.update');
-    Route::delete('/related/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardRelated::class, 'destroy'])
-        ->name('related.destroy');
+        // 대시보드
+        Route::get('/', \Jiny\Post\Http\Controllers\Admin\BoardDashboard\AdminSiteBoardDashboard::class)
+            ->name('dashboard');
 
-    // 트렌드글 관리 - RESTful 라우트
-    Route::get('/trend', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardTrend::class, 'index'])
-        ->name('trend');
-    Route::get('/trend/create', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardTrend::class, 'create'])
-        ->name('trend.create');
-    Route::post('/trend', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardTrend::class, 'store'])
-        ->name('trend.store');
-    Route::get('/trend/{id}/edit', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardTrend::class, 'edit'])
-        ->name('trend.edit');
-    Route::put('/trend/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardTrend::class, 'update'])
-        ->name('trend.update');
-    Route::delete('/trend/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardTrend::class, 'destroy'])
-        ->name('trend.destroy');
+        // 게시판 목록 관리 (Single Action Controllers with Permission Management)
+        Route::prefix('list')->name('list.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListIndex::class)
+                ->name('index');
+            Route::get('/create', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListCreate::class)
+                ->name('create');
+            Route::post('/', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListStore::class)
+                ->name('store');
+            Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListEdit::class)
+                ->name('edit');
+            Route::put('/{id}', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListUpdate::class)
+                ->name('update');
+            Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListDelete::class)
+                ->name('destroy');
 
-    // 게시판별 게시글 관리 - RESTful 라우트
-    Route::get('/posts/{code}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'index'])
-        ->name('posts');
-    Route::get('/posts/{code}/create', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'create'])
-        ->name('posts.create');
-    Route::post('/posts/{code}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'store'])
-        ->name('posts.store');
-    Route::get('/posts/{code}/{id}/edit', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'edit'])
-        ->name('posts.edit');
-    Route::put('/posts/{code}/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'update'])
-        ->name('posts.update');
-    Route::delete('/posts/{code}/{id}', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'destroy'])
-        ->name('posts.destroy');
-    // 하위 글 작성
-    Route::get('/posts/{code}/{id}/child/create', [\Jiny\Post\Http\Controllers\Admin\Board\AdminBoardPost::class, 'createChild'])
-        ->name('posts.child.create');
+            // 권한 관리 기능
+            Route::get('/permissions/{boardCode?}', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListPermission::class)
+                ->name('permissions');
+            Route::post('/permissions/bulk-update', [\Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListPermission::class, 'bulkUpdate'])
+                ->name('permissions.bulk-update');
+        });
 
-    // 평가 테이블 마이그레이션
-    Route::post('/migrate-rating-tables', \Jiny\Post\Http\Controllers\Admin\Board\MigrateRatingTableController::class)
-        ->name('migrate.rating.tables');
+        // 게시글 관리 (Unified Controllers: index, create, edit)
+        Route::prefix('posts')->name('posts.')->group(function () {
+            // List posts for a board
+            Route::get('/{code}', \Jiny\Post\Http\Controllers\Admin\BoardPost\AdminBoardPostIndex::class)
+                ->name('index');
+
+            // Create new post or reply (handles both GET and POST)
+            Route::match(['GET', 'POST'], '/{code}/create', \Jiny\Post\Http\Controllers\Admin\BoardPost\AdminBoardPostCreate::class)
+                ->name('create');
+
+            // Edit/Update/Delete post (handles GET, PUT, DELETE)
+            Route::match(['GET', 'PUT', 'DELETE'], '/{code}/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BoardPost\AdminBoardPostEdit::class)
+                ->name('edit');
+
+            // Alternative routes for standard REST operations
+            Route::post('/{code}', \Jiny\Post\Http\Controllers\Admin\BoardPost\AdminBoardPostCreate::class)
+                ->name('store');
+            Route::put('/{code}/{id}', \Jiny\Post\Http\Controllers\Admin\BoardPost\AdminBoardPostEdit::class)
+                ->name('update');
+            Route::delete('/{code}/{id}', \Jiny\Post\Http\Controllers\Admin\BoardPost\AdminBoardPostEdit::class)
+                ->name('destroy');
+        });
+
+        // 관련글 관리 (Single Action Controllers)
+        Route::prefix('related')->name('related.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\BoardRelated\AdminBoardRelatedIndex::class)
+                ->name('index');
+            Route::get('/create', \Jiny\Post\Http\Controllers\Admin\BoardRelated\AdminBoardRelatedCreate::class)
+                ->name('create');
+            Route::post('/', \Jiny\Post\Http\Controllers\Admin\BoardRelated\AdminBoardRelatedStore::class)
+                ->name('store');
+            Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BoardRelated\AdminBoardRelatedEdit::class)
+                ->name('edit');
+            Route::put('/{id}', \Jiny\Post\Http\Controllers\Admin\BoardRelated\AdminBoardRelatedUpdate::class)
+                ->name('update');
+            Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\BoardRelated\AdminBoardRelatedDelete::class)
+                ->name('destroy');
+        });
+
+        // 트렌드글 관리 (Single Action Controllers)
+        Route::prefix('trend')->name('trend.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\BoardTrend\AdminBoardTrendIndex::class)
+                ->name('index');
+            Route::get('/create', \Jiny\Post\Http\Controllers\Admin\BoardTrend\AdminBoardTrendCreate::class)
+                ->name('create');
+            Route::post('/', \Jiny\Post\Http\Controllers\Admin\BoardTrend\AdminBoardTrendStore::class)
+                ->name('store');
+            Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BoardTrend\AdminBoardTrendEdit::class)
+                ->name('edit');
+            Route::put('/{id}', \Jiny\Post\Http\Controllers\Admin\BoardTrend\AdminBoardTrendUpdate::class)
+                ->name('update');
+            Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\BoardTrend\AdminBoardTrendDelete::class)
+                ->name('destroy');
+        });
+
+        // 댓글 신고 관리 (Comment Reports)
+        Route::prefix('comment')->name('comment.')->group(function () {
+            Route::prefix('reports')->name('reports.')->group(function () {
+                Route::get('/', \Jiny\Post\Http\Controllers\Admin\CommentReports\CommentReports::class)
+                    ->name('index');
+                Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\CommentReports\CommentReportsShow::class)
+                    ->name('show');
+                Route::post('/{id}/approve', \Jiny\Post\Http\Controllers\Admin\CommentReports\CommentReportsApprove::class)
+                    ->name('approve');
+                Route::post('/{id}/reject', \Jiny\Post\Http\Controllers\Admin\CommentReports\CommentReportsReject::class)
+                    ->name('reject');
+                Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\CommentReports\CommentReportsDelete::class)
+                    ->name('delete');
+            });
+        });
+
+        // 기타 기능 (MigrateRatingTableController 통합)
+        Route::post('/migrate-rating-tables', \Jiny\Post\Http\Controllers\Admin\BoardList\AdminBoardListMigrateRating::class)
+            ->name('migrate.rating.tables');
+    });
+
+    // =====================================
+    // Forum (포럼) 관리 시스템
+    // =====================================
+    Route::prefix('forum')->name('forum.')->group(function () {
+
+        // 포럼 메인 페이지
+        Route::get('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumIndex::class)
+            ->name('index');
+
+        // 포럼 설정 관리
+        Route::prefix('config')->name('config.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\ForumConfig\AdminForumConfigIndex::class)
+                ->name('index');
+            Route::match(['POST', 'PUT'], '/', \Jiny\Post\Http\Controllers\Admin\ForumConfig\AdminForumConfigUpdate::class)
+                ->name('update');
+        });
+
+        // 포럼 카테고리 관리
+        Route::prefix('category')->name('category.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryIndex::class)
+                ->name('index');
+            Route::get('/create', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryCreate::class)
+                ->name('create');
+            Route::post('/', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryCreate::class)
+                ->name('store');
+            Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryEdit::class)
+                ->name('edit')->where('id', '[0-9]+');
+            Route::match(['POST', 'PUT'], '/{id}', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryEdit::class)
+                ->name('update')->where('id', '[0-9]+');
+            Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryDelete::class)
+                ->name('destroy')->where('id', '[0-9]+');
+            Route::post('/order', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryOrder::class)
+                ->name('order');
+        });
+
+        // 포럼 글 관리 (CRUD)
+        Route::get('/create', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumCreate::class)
+            ->name('create');
+        Route::post('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumStore::class)
+            ->name('store');
+        Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumShow::class)
+            ->name('show')->where('id', '[0-9]+');
+        Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumEdit::class)
+            ->name('edit')->where('id', '[0-9]+');
+        Route::put('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumUpdate::class)
+            ->name('update')->where('id', '[0-9]+');
+        Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumDelete::class)
+            ->name('destroy')->where('id', '[0-9]+');
+    });
+
+    // =====================================
+    // Blog (블로그) 관리 시스템
+    // =====================================
+    Route::prefix('blog')->name('blog.')->group(function () {
+
+        // 블로그 메인 페이지
+        Route::get('/', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogIndex::class)
+            ->name('index');
+
+        // 블로그 설정 관리
+        Route::prefix('config')->name('config.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\BlogConfig\AdminBlogConfigIndex::class)
+                ->name('index');
+            Route::match(['POST', 'PUT'], '/', \Jiny\Post\Http\Controllers\Admin\BlogConfig\AdminBlogConfigUpdate::class)
+                ->name('update');
+        });
+
+        // 블로그 카테고리 관리
+        Route::prefix('category')->name('category.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryIndex::class)
+                ->name('index');
+            Route::get('/create', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryCreate::class)
+                ->name('create');
+            Route::post('/', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryCreate::class)
+                ->name('store');
+            Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryEdit::class)
+                ->name('edit')->where('id', '[0-9]+');
+            Route::match(['POST', 'PUT'], '/{id}', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryEdit::class)
+                ->name('update')->where('id', '[0-9]+');
+            Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryDelete::class)
+                ->name('destroy')->where('id', '[0-9]+');
+            Route::post('/order', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryOrder::class)
+                ->name('order');
+        });
+
+        // 블로그 댓글 관리
+        Route::prefix('comment')->name('comment.')->group(function () {
+            Route::get('/', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentIndex::class)
+                ->name('index');
+            Route::post('/store', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentStore::class)
+                ->name('store');
+            Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentEdit::class)
+                ->name('edit')->where('id', '[0-9]+');
+            Route::post('/{id}/update', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentUpdate::class)
+                ->name('update')->where('id', '[0-9]+');
+            Route::post('/{id}/approve', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentApprove::class)
+                ->name('approve')->where('id', '[0-9]+');
+            Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentDelete::class)
+                ->name('destroy')->where('id', '[0-9]+');
+        });
+
+        // 블로그 글 관리 (CRUD) - 가장 마지막에 정의하여 {id} 충돌 방지
+        Route::get('/create', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogCreate::class)
+            ->name('create');
+        Route::post('/', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogStore::class)
+            ->name('store');
+        Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogShow::class)
+            ->name('show')->where('id', '[0-9]+');
+        Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogEdit::class)
+            ->name('edit')->where('id', '[0-9]+');
+        Route::match(['POST', 'PUT'], '/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogUpdate::class)
+            ->name('update')->where('id', '[0-9]+');
+        Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogDelete::class)
+            ->name('destroy')->where('id', '[0-9]+');
+    });
 });
 
-/**
- * Forum (포럼) 관리 라우트
- *
- * @description
- * 단일 포럼 시스템을 관리하는 라우트입니다.
- * 포럼 글 작성, 수정, 삭제 등을 관리합니다.
- */
-Route::middleware(['admin'])->prefix('admin/cms/forum')->name('admin.cms.forum')->group(function () {
-
-    // 포럼 설정 (JSON 기반) - Single Action Controllers (/{id} 라우트보다 먼저 정의)
-    Route::get('/config', \Jiny\Post\Http\Controllers\Admin\ForumConfig\AdminForumConfigIndex::class)
-        ->name('.config');
-    Route::match(['POST', 'PUT'], '/config', \Jiny\Post\Http\Controllers\Admin\ForumConfig\AdminForumConfigUpdate::class)
-        ->name('.config.update');
-
-
-
-    // 포럼 카테고리 관리 - Single Action Controllers (/{id} 라우트보다 먼저 정의)
-    Route::get('/category', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryIndex::class)
-        ->name('.category');
-    Route::get('/category/create', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryCreate::class)
-        ->name('.category.create');
-    Route::post('/category', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryCreate::class)
-        ->name('.category.store');
-    Route::get('/category/{id}/edit', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryEdit::class)
-        ->name('.category.edit')->where('id', '[0-9]+');
-    Route::match(['POST', 'PUT'], '/category/{id}', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryEdit::class)
-        ->name('.category.update')->where('id', '[0-9]+');
-    Route::delete('/category/{id}', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryDelete::class)
-        ->name('.category.destroy')->where('id', '[0-9]+');
-    Route::post('/category/order', \Jiny\Post\Http\Controllers\Admin\ForumCategory\AdminForumCategoryOrder::class)
-        ->name('.category.order');
-
-    // 포럼 글 목록 - Single Action Controllers (단일 포럼 관리)
-    Route::get('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumIndex::class)
-        ->name('');
-    Route::get('/create', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumCreate::class)
-        ->name('.create');
-    Route::post('/', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumStore::class)
-        ->name('.store');
-    Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumShow::class)
-        ->name('.show')->where('id', '[0-9]+');
-    Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumEdit::class)
-        ->name('.edit')->where('id', '[0-9]+');
-    Route::put('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumUpdate::class)
-        ->name('.update')->where('id', '[0-9]+');
-    Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\Forum\AdminForumDelete::class)
-        ->name('.destroy')->where('id', '[0-9]+');
-});
-
-
-/**
- * Blog (블로그) 관리 라우트
- *
- * @description
- * 블로그 시스템을 관리하는 라우트입니다.
- * Single Action Controller 방식으로 구현되어 있습니다.
- * 블로그 글 작성, 수정, 삭제 및 카테고리 관리를 제공합니다.
- */
-Route::middleware(['admin'])->prefix('admin/cms/blog')->name('admin.cms.blog')->group(function () {
-    // 블로그 글 목록
-    Route::get('/', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogIndex::class)
-        ->name('');
-
-    // 블로그 설정 (JSON 기반) - Single Action Controllers
-    Route::get('/config', \Jiny\Post\Http\Controllers\Admin\BlogConfig\AdminBlogConfigIndex::class)
-        ->name('.config');
-    Route::match(['POST', 'PUT'], '/config', \Jiny\Post\Http\Controllers\Admin\BlogConfig\AdminBlogConfigUpdate::class)
-        ->name('.config.update');
-
-    // 블로그 글 생성
-    Route::get('/create', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogCreate::class)
-        ->name('.create');
-    Route::post('/', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogStore::class)
-        ->name('.store');
-
-    // 일괄 작업 (/{id} 라우트보다 먼저 정의)
-    // Route::post('/bulk/status', [\Jiny\Post\Http\Controllers\Admin\Blog\AdminBlog::class, 'bulkStatus'])
-    //     ->name('.bulk.status');
-
-    // 블로그 카테고리 관리 - Single Action Controllers (/{id} 라우트보다 먼저 정의)
-    Route::get('/category', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryIndex::class)
-        ->name('.category');
-    Route::get('/category/create', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryCreate::class)
-        ->name('.category.create');
-    Route::post('/category', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryCreate::class)
-        ->name('.category.store');
-    Route::get('/category/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryEdit::class)
-        ->name('.category.edit')->where('id', '[0-9]+');
-    Route::match(['POST', 'PUT'], '/category/{id}', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryEdit::class)
-        ->name('.category.update')->where('id', '[0-9]+');
-    Route::delete('/category/{id}', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryDelete::class)
-        ->name('.category.destroy')->where('id', '[0-9]+');
-    Route::post('/category/order', \Jiny\Post\Http\Controllers\Admin\BlogCategory\AdminBlogCategoryOrder::class)
-        ->name('.category.order');
-
-    // 블로그 글 개별 조작 라우트 (가장 마지막에 정의 - {id} 매개변수가 다른 경로와 충돌하지 않도록)
-    Route::get('/{id}', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogShow::class)
-        ->name('.show')->where('id', '[0-9]+');
-    Route::get('/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogEdit::class)
-        ->name('.edit')->where('id', '[0-9]+');
-    Route::match(['POST', 'PUT'], '/{id}/edit', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogUpdate::class)
-        ->name('.update')->where('id', '[0-9]+');
-    Route::delete('/{id}', \Jiny\Post\Http\Controllers\Admin\Blog\AdminBlogDelete::class)
-        ->name('.destroy')->where('id', '[0-9]+');
-
-    // 블로그 댓글 관리
-    Route::get('/comment', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentIndex::class)
-        ->name('.comment');
-    Route::post('/comment/store', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentStore::class)
-        ->name('.comment.store');
-    Route::get('/comment/{id}/edit', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentEdit::class)
-        ->name('.comment.edit')->where('id', '[0-9]+');
-    Route::post('/comment/{id}/update', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentUpdate::class)
-        ->name('.comment.update')->where('id', '[0-9]+');
-    Route::post('/comment/{id}/approve', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentApprove::class)
-        ->name('.comment.approve')->where('id', '[0-9]+');
-    Route::delete('/comment/{id}', \Jiny\Post\Http\Controllers\Admin\BlogComment\AdminBlogCommentDelete::class)
-        ->name('.comment.destroy')->where('id', '[0-9]+');
-});
+// =====================================
+// 프론트엔드 공개 라우트
+// =====================================
 
 /**
  * 댓글 제출 (프론트엔드용 - 인증 불필요)

@@ -38,7 +38,7 @@ class AdminForumEdit extends Controller
         $item = DB::table($this->table)->find($id);
 
         if (!$item) {
-            return redirect()->route('admin.cms.forum')
+            return redirect()->route('admin.cms.forum.index')
                 ->with('error', '포럼 글을 찾을 수 없습니다.');
         }
 

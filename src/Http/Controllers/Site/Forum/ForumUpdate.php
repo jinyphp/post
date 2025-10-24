@@ -271,15 +271,9 @@ class ForumUpdate extends Controller
 
         foreach ($images as $index => $image) {
             try {
-                // 계층화된 경로 생성: forum/YYYY/MM/DD/HH/
+                // 계층화된 경로 생성: forum/{year}/{month}/{day}/{forumId}/
                 $now = now();
-                $hierarchicalPath = sprintf(
-                    'forum/%04d/%02d/%02d/%02d',
-                    $now->year,
-                    $now->month,
-                    $now->day,
-                    $now->hour
-                );
+                $hierarchicalPath = "forum/{$now->year}/{$now->month}/{$now->day}/{$forumId}";
 
                 // UUID 기반 파일명 생성 (Admin용과 동일하게)
                 $filename = \Illuminate\Support\Str::uuid() . '.' . $image->getClientOriginalExtension();

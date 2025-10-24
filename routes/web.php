@@ -14,44 +14,43 @@ Route::middleware('web')->prefix('board')->name('board.')->group(function () {
         ->name('dashboard');
 
     // 게시판 목록
-    Route::get('/{code}', \Jiny\Post\Http\Controllers\Site\BoardTable\IndexController::class)
+    Route::get('/{code}', \Jiny\Post\Http\Controllers\Site\BoardPost\IndexController::class)
         ->name('index');
 
     // 게시글 작성
-    Route::get('/{code}/create', \Jiny\Post\Http\Controllers\Site\BoardTable\CreateController::class)
+    Route::get('/{code}/create', \Jiny\Post\Http\Controllers\Site\BoardPost\CreateController::class)
         ->name('create');
-    Route::post('/{code}/create', \Jiny\Post\Http\Controllers\Site\BoardTable\StoreController::class)
+    Route::post('/{code}', \Jiny\Post\Http\Controllers\Site\BoardPost\StoreController::class)
         ->name('store');
 
     // 게시글 보기
-    Route::get('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardTable\ShowController::class)
+    Route::get('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardPost\ShowController::class)
         ->name('show');
 
     // 게시글 수정
-    Route::get('/{code}/{id}/edit', \Jiny\Post\Http\Controllers\Site\BoardTable\EditController::class)
+    Route::get('/{code}/{id}/edit', \Jiny\Post\Http\Controllers\Site\BoardPost\EditController::class)
         ->name('edit');
-    Route::put('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardTable\UpdateController::class)
+    Route::put('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardPost\UpdateController::class)
         ->name('update');
 
     // 게시글 삭제
-    Route::delete('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardTable\DestroyController::class)
+    Route::delete('/{code}/{id}', \Jiny\Post\Http\Controllers\Site\BoardPost\DestroyController::class)
         ->name('destroy');
 
     // 답글 작성
-    Route::get('/{code}/{id}/reply', \Jiny\Post\Http\Controllers\Site\BoardTable\CreateChildController::class)
+    Route::get('/{code}/{id}/reply', \Jiny\Post\Http\Controllers\Site\BoardPost\CreateController::class)
         ->name('reply');
 
-    // 댓글 관리
-    Route::post('/{code}/{id}/comment', \Jiny\Post\Http\Controllers\Site\BoardTable\StoreCommentController::class)
-        ->name('comment.store');
-    Route::put('/{code}/{id}/comment/{commentId}', \Jiny\Post\Http\Controllers\Site\BoardTable\UpdateCommentController::class)
-        ->name('comment.update');
-    Route::delete('/{code}/{id}/comment/{commentId}', \Jiny\Post\Http\Controllers\Site\BoardTable\DestroyCommentController::class)
-        ->name('comment.destroy');
+    // 댓글 관리는 Livewire 컴포넌트로 처리됨
 
     // 평가 관리
-    Route::post('/{code}/{id}/rating', \Jiny\Post\Http\Controllers\Site\BoardTable\StoreRatingController::class)
+    Route::post('/{code}/{id}/rating', \Jiny\Post\Http\Controllers\Site\BoardPost\StoreRatingController::class)
         ->name('rating.store');
+
+    // 파일 다운로드
+    Route::get('/{code}/{id}/download/{attachmentId}', \Jiny\Post\Http\Controllers\Site\BoardPost\DownloadController::class)
+        ->name('download')
+        ->where(['id' => '[0-9]+', 'attachmentId' => '[0-9]+']);
 });
 
 /**
