@@ -4,7 +4,6 @@ namespace Jiny\Post\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Blade;
 use Livewire\Livewire;
 
 class JinyPostServiceProvider extends ServiceProvider
@@ -22,9 +21,6 @@ class JinyPostServiceProvider extends ServiceProvider
 
         // Load package routes
         $this->loadRoutes();
-
-        // Register Blade components
-        $this->loadBladeComponents();
 
         // Livewire 컴포넌트 등록 (AppServiceProvider에서 처리됨)
         // Livewire::component('jiny-post::board-comment', \Jiny\Post\Http\Livewire\BoardComment::class);
@@ -86,41 +82,6 @@ class JinyPostServiceProvider extends ServiceProvider
         Route::middleware(['web'])
             ->group(__DIR__.'/../../routes/web.php');
     }
-
-    /**
-     * Load Blade components
-     */
-    protected function loadBladeComponents(): void
-    {
-        Blade::componentNamespace('Jiny\\Post\\View\\Components', 'jiny-post');
-
-        // Register individual components
-        Blade::component('jiny-post::components.switch', 'switch');
-        Blade::component('jiny-post::components.btn-save', 'btn-save');
-        Blade::component('jiny-post::components.input-number', 'input-number');
-        Blade::component('jiny-post::components.help', 'help');
-        Blade::component('jiny-post::components.help-title', 'help-title');
-        Blade::component('jiny-post::components.content', 'content');
-        Blade::component('jiny-post::components.content-main', 'content-main');
-        Blade::component('jiny-post::components.content-side', 'content-side');
-        Blade::component('jiny-post::components.form-post', 'form-post');
-        Blade::component('jiny-post::components.form-put', 'form-put');
-        Blade::component('jiny-post::components.form-patch', 'form-patch');
-        Blade::component('jiny-post::components.form-delete', 'form-delete');
-        Blade::component('jiny-post::components.card', 'card');
-        Blade::component('jiny-post::components.card-header', 'card-header');
-        Blade::component('jiny-post::components.card-body', 'card-body');
-        Blade::component('jiny-post::components.alert-success', 'alert-success');
-        Blade::component('jiny-post::components.alert-danger', 'alert-danger');
-        Blade::component('jiny-post::components.input-text', 'input-text');
-        Blade::component('jiny-post::components.textarea', 'textarea');
-        Blade::component('jiny-post::components.btn-create', 'btn-create');
-        Blade::component('jiny-post::components.btn-back-to-list', 'btn-back-to-list');
-        Blade::component('jiny-post::components.btn-delete', 'btn-delete');
-        Blade::component('jiny-post::components.btn-reset', 'btn-reset');
-        Blade::component('jiny-post::components.heading', 'heading');
-    }
-
 
     /**
      * Get the services provided by the provider.
